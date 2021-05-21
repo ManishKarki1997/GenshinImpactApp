@@ -166,7 +166,7 @@ const ViewCharacter = ({route, navigation}) => {
         </View>
       )} */}
 
-      {!isLoading && currentlyViewingCharacter && (
+      {currentlyViewingCharacter && (
         <>
           <SectionWrapper>
             <Header>
@@ -326,12 +326,12 @@ const ViewCharacter = ({route, navigation}) => {
               <IconWrapper style={{width: '35%'}}>
                 <Image
                   source={{
-                    uri: currentlyViewingCharacter.localSpecialty.iconUrl,
+                    uri: currentlyViewingCharacter.localSpecialty?.iconUrl,
                   }}
                   style={{height: 60, width: 60}}
                 />
               </IconWrapper>
-              <Small>{currentlyViewingCharacter.localSpecialty.name}</Small>
+              <Small>{currentlyViewingCharacter.localSpecialty?.name}</Small>
             </View>
           </SectionWrapper>
 

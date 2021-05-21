@@ -30,6 +30,7 @@ const findCharacterAscensionMaterialsInfo = (character, ascensionLevel) => {
         ...character.commonAscensionMaterials.find(x => x.rarity == mat.rarity),
       };
     } else if (mat.type === 'WORLD_BOSS_MATERIAL') {
+      console.log({mat});
       return {
         ...mat,
         ...characterAscensionGemsMaterials.find(
