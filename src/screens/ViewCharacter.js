@@ -1,72 +1,71 @@
-import React from "react";
-import styled from "styled-components/native";
-import { Image, ActivityIndicator, View, TouchableOpacity } from "react-native";
-import { SharedElement } from "react-navigation-shared-element";
-import { useNetInfo } from "@react-native-community/netinfo";
+import React from 'react';
+import styled from 'styled-components/native';
+import {Image, ActivityIndicator, View, TouchableOpacity} from 'react-native';
+import {SharedElement} from 'react-navigation-shared-element';
+import {useNetInfo} from '@react-native-community/netinfo';
 
-import { Body, Heading3, Small, Subtitle } from "../components/Typography";
-import { LoadingIconWrapper } from "../components/styles";
-import { ThemeContext } from "../contexts/ThemeContext";
-import { DarkTheme, LightTheme } from "../constants";
+import {Body, Heading3, Small, Subtitle} from '../components/Typography';
+import {LoadingIconWrapper} from '../components/styles';
+import {ThemeContext} from '../contexts/ThemeContext';
+import {DarkTheme, LightTheme} from '../constants';
 import {
   findCharacterAscensionMaterialsInfo,
   findTalentUpgradeMaterials,
-} from "../helpers";
-import { useAppStateContext, useAppDispatchContext } from "../contexts";
-import { fetchCharacterDetail } from "../hooks/useCharacters";
+} from '../helpers';
+import {useAppStateContext, useAppDispatchContext} from '../contexts';
+import {fetchCharacterDetail} from '../hooks/useCharacters';
 
 const combatTalentNamesStatic = {
-  1: "normal-attack",
-  2: "elemental-skill",
-  3: "elemental-burst",
+  1: 'normal-attack',
+  2: 'elemental-skill',
+  3: 'elemental-burst',
 };
 
 const skillGifsToFileMap = {
-  NORMAL: "normal-attack",
-  PRESS: "skill-press",
-  HOLD: "skill-hold",
-  BURST: "burst",
+  NORMAL: 'normal-attack',
+  PRESS: 'skill-press',
+  HOLD: 'skill-hold',
+  BURST: 'burst',
 };
 
 const characterLevelUpHeaderInfo = [
   {
-    name: "A1",
+    name: 'A1',
     level: 20,
   },
   {
-    name: "A2",
+    name: 'A2',
     level: 40,
   },
   {
-    name: "A3",
+    name: 'A3',
     level: 50,
   },
   {
-    name: "A4",
+    name: 'A4',
     level: 60,
   },
   {
-    name: "A5",
+    name: 'A5',
     level: 70,
   },
   {
-    name: "A6",
+    name: 'A6',
     level: 80,
   },
 ];
 
-const ViewCharacter = ({ route, navigation }) => {
+const ViewCharacter = ({route, navigation}) => {
   const netInfo = useNetInfo();
 
-  const { isLoading, currentlyViewingCharacter, buildCharacterList } =
-    useAppStateContext();
+  const {isLoading, currentlyViewingCharacter} = useAppStateContext();
   const appDispatch = useAppDispatchContext();
 
-  const { theme } = React.useContext(ThemeContext);
-  const activeTheme = theme === "light" ? LightTheme : DarkTheme;
+  const {theme} = React.useContext(ThemeContext);
+  const activeTheme = theme === 'light' ? LightTheme : DarkTheme;
 
   const [activeSkillGifTab, setActiveSkillGifTab] =
-    React.useState("Normal Attack");
+    React.useState('Normal Attack');
 
   const [selectedCharacterLevel, setSelectedCharacterLevel] =
     React.useState(80);
@@ -86,7 +85,7 @@ const ViewCharacter = ({ route, navigation }) => {
   React.useEffect(() => {
     async function getCharacter() {
       appDispatch({
-        type: "SET_LOADING",
+        type: 'SET_LOADING',
         payload: {
           isLoading: true,
         },
@@ -95,7 +94,7 @@ const ViewCharacter = ({ route, navigation }) => {
       const res = await fetchCharacterDetail(route.params.name);
 
       appDispatch({
-        type: "SET_CURRENTLY_VIEWING_CHARACTER",
+        type: 'SET_CURRENTLY_VIEWING_CHARACTER',
         payload: {
           character: res.data.payload.character,
         },
@@ -103,16 +102,16 @@ const ViewCharacter = ({ route, navigation }) => {
     }
 
     getCharacter();
-  }, []);
+  }, [appDispatch, route.params.name]);
 
   React.useEffect(() => {
     if (!currentlyViewingCharacter) return;
 
     const skillType = currentlyViewingCharacter.combatSkills.find(
-      (c) => c.name === activeSkillGifTab
+      c => c.name === activeSkillGifTab,
     );
     const exactVariant = skillType.variants.filter(
-      (v) => v.type && v.description && v.fileName
+      v => v.type && v.description && v.fileName,
     )[0];
 
     setActiveSkillGif(exactVariant);
@@ -122,14 +121,14 @@ const ViewCharacter = ({ route, navigation }) => {
     navigation.setOptions({
       title: route.params.name,
     });
-  }, []);
+  }, [navigation, route.params.name]);
 
   React.useEffect(() => {
     if (!currentlyViewingCharacter) return;
 
     const allAscensionStatMats = findCharacterAscensionMaterialsInfo(
       currentlyViewingCharacter,
-      selectedCharacterLevel
+      selectedCharacterLevel,
     );
     setCharacterLevelAscensionInfo(allAscensionStatMats);
   }, [selectedCharacterLevel, currentlyViewingCharacter]);
@@ -138,8 +137,8 @@ const ViewCharacter = ({ route, navigation }) => {
     if (currentlyViewingCharacter) {
       const talentLvlInfoTemp = findTalentUpgradeMaterials(
         currentlyViewingCharacter,
-        selectedTalentLevelUpLevel
-      ).filter((x) => x);
+        selectedTalentLevelUpLevel,
+      ).filter(x => x);
       setCharacterTalentLevelUpInfo(talentLvlInfoTemp);
     }
   }, [selectedTalentLevelUpLevel, currentlyViewingCharacter]);
@@ -150,28 +149,28 @@ const ViewCharacter = ({ route, navigation }) => {
         <ImageWrapper>
           <Image
             source={{
-              uri: `https://res.cloudinary.com/dnoibyqq2/image/upload/v1617899636/genshin-app/characters/${route.params.name}/card.jpg`,
+              uri: `https://res.cloudinary.com/dnoibyqq2/image/upload/v1617899636/genshin-app/characters/${route.params.name}/compressed.jpg`,
             }}
             style={{
-              height: "100%",
-              width: "100%",
+              height: '100%',
+              width: '100%',
               borderRadius: 8,
             }}
           />
         </ImageWrapper>
       </SharedElement>
 
-      {isLoading && (
+      {/* {isLoading && (
         <View>
           <ActivityIndicator size="large" color="#e04352" />
         </View>
-      )}
+      )} */}
 
       {!isLoading && currentlyViewingCharacter && (
         <>
           <SectionWrapper>
             <Header>
-              <Small>Bio</Small>
+              <Small style={{color: 'white'}}>Bio</Small>
             </Header>
             <Small>{currentlyViewingCharacter.description}</Small>
           </SectionWrapper>
@@ -179,29 +178,27 @@ const ViewCharacter = ({ route, navigation }) => {
           {/* Character Ascension Costs Calculator */}
           <SectionWrapper>
             <Header>
-              <Small>Ascension Cost</Small>
+              <Small style={{color: 'white'}}>Ascension Cost</Small>
             </Header>
 
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                flexWrap: "wrap",
+                flexDirection: 'row',
+                alignItems: 'center',
+                flexWrap: 'wrap',
                 marginBottom: 20,
-              }}
-            >
+              }}>
               {characterLevelUpHeaderInfo.map((info, index) => {
                 return (
                   <AscensionLevelWrapper
-                    key={info.name + "-" + info.count + "-" + index}
+                    key={info.name + '-' + info.count + '-' + index}
                     onPress={() => setSelectedCharacterLevel(info.level)}
                     style={{
                       backgroundColor:
                         selectedCharacterLevel === info.level
                           ? activeTheme.SECONDARY_BACKGROUND
                           : null,
-                    }}
-                  >
+                    }}>
                     <Small>
                       {info.name} Lv({info.level})
                     </Small>
@@ -212,28 +209,26 @@ const ViewCharacter = ({ route, navigation }) => {
 
             <View
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-              }}
-            >
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+              }}>
               {characterLevelAscensionInfo &&
                 characterLevelAscensionInfo.map((mat, index) => {
                   return (
                     <View
-                      key={mat.name + "-material-" + index}
+                      key={mat.name + '-material-' + index}
                       style={{
                         marginBottom: 20,
-                        width: "45%",
-                        flexDirection: "column",
-                        alignItems: "center",
-                      }}
-                    >
-                      <IconWrapper style={{ width: "100%", height: 70 }}>
+                        width: '45%',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                      }}>
+                      <IconWrapper style={{width: '100%', height: 70}}>
                         <Heading3>{mat.count} x </Heading3>
                         <Image
-                          source={{ uri: mat.iconUrl }}
-                          style={{ height: 50, width: 50 }}
+                          source={{uri: mat.iconUrl}}
+                          style={{height: 50, width: 50}}
                         />
                       </IconWrapper>
                       <Small>{mat.name}</Small>
@@ -246,39 +241,36 @@ const ViewCharacter = ({ route, navigation }) => {
           {/* Talent books for the character */}
           <SectionWrapper>
             <Header>
-              <Small>Talent Books</Small>
+              <Small style={{color: 'white'}}>Talent Books</Small>
             </Header>
             <View
               style={{
-                flexDirection: "row",
+                flexDirection: 'row',
                 // alignItems: "center",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-              }}
-            >
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+              }}>
               {currentlyViewingCharacter.talentBook.map((talentBook, idx) => {
                 return (
                   <View
-                    key={"talent-book-" + talentBook.name + "-" + idx}
+                    key={'talent-book-' + talentBook.name + '-' + idx}
                     style={{
-                      width: "45%",
+                      width: '45%',
                       // marginRight: 20,
                       marginBottom: 20,
-                    }}
-                  >
+                    }}>
                     <IconWrapper>
                       <Image
-                        source={{ uri: talentBook.iconUrl }}
-                        style={{ height: 60, width: 60 }}
+                        source={{uri: talentBook.iconUrl}}
+                        style={{height: 60, width: 60}}
                       />
                     </IconWrapper>
                     <View
                       style={{
-                        flexDirection: "row",
-                        justifyContent: "center",
+                        flexDirection: 'row',
+                        justifyContent: 'center',
                         marginTop: 4,
-                      }}
-                    >
+                      }}>
                       <Small>{talentBook.name}</Small>
                     </View>
                   </View>
@@ -290,35 +282,33 @@ const ViewCharacter = ({ route, navigation }) => {
           {/* Talent Boss Materials */}
           <SectionWrapper>
             <Header>
-              <Small>Talent Boss Material</Small>
+              <Small style={{color: 'white'}}>Talent Boss Material</Small>
             </Header>
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                flexWrap: "wrap",
-              }}
-            >
+                flexDirection: 'row',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+              }}>
               {currentlyViewingCharacter.talentMaterial.map(
                 (talentBossMaterial, idx) => {
                   return (
                     <View
-                      key={"talent-book-" + talentBossMaterial.name + "-" + idx}
+                      key={'talent-book-' + talentBossMaterial.name + '-' + idx}
                       style={{
                         marginRight: 20,
                         marginBottom: 20,
-                      }}
-                    >
+                      }}>
                       <IconWrapper>
                         <Image
-                          source={{ uri: talentBossMaterial.iconUrl }}
-                          style={{ height: 60, width: 60 }}
+                          source={{uri: talentBossMaterial.iconUrl}}
+                          style={{height: 60, width: 60}}
                         />
                       </IconWrapper>
                       <Small>{talentBossMaterial.name}</Small>
                     </View>
                   );
-                }
+                },
               )}
             </View>
           </SectionWrapper>
@@ -326,20 +316,19 @@ const ViewCharacter = ({ route, navigation }) => {
           {/* Local Specialty */}
           <SectionWrapper>
             <Header>
-              <Small>Local Specialty</Small>
+              <Small style={{color: 'white'}}>Local Specialty</Small>
             </Header>
             <View
               style={{
-                alignItems: "center",
-                flexWrap: "wrap",
-              }}
-            >
-              <IconWrapper style={{ width: "35%" }}>
+                alignItems: 'center',
+                flexWrap: 'wrap',
+              }}>
+              <IconWrapper style={{width: '35%'}}>
                 <Image
                   source={{
                     uri: currentlyViewingCharacter.localSpecialty.iconUrl,
                   }}
-                  style={{ height: 60, width: 60 }}
+                  style={{height: 60, width: 60}}
                 />
               </IconWrapper>
               <Small>{currentlyViewingCharacter.localSpecialty.name}</Small>
@@ -349,41 +338,39 @@ const ViewCharacter = ({ route, navigation }) => {
           {/* Common Ascension Materials */}
           <SectionWrapper>
             <Header>
-              <Small>Common Ascension Materials</Small>
+              <Small style={{color: 'white'}}>Common Ascension Materials</Small>
             </Header>
             <View
               style={{
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "space-between",
-              }}
-            >
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+              }}>
               {currentlyViewingCharacter.commonAscensionMaterials.map(
                 (commonAscensionMaterial, idx) => {
                   return (
                     <View
                       key={
-                        "talent-book-" +
+                        'talent-book-' +
                         commonAscensionMaterial.name +
-                        "-" +
+                        '-' +
                         idx
                       }
                       style={{
-                        width: "45%",
+                        width: '45%',
                         marginBottom: 20,
-                        flexDirection: "column",
-                      }}
-                    >
-                      <IconWrapper style={{ width: "100%" }}>
+                        flexDirection: 'column',
+                      }}>
+                      <IconWrapper style={{width: '100%'}}>
                         <Image
-                          source={{ uri: commonAscensionMaterial.iconUrl }}
-                          style={{ height: 60, width: 60 }}
+                          source={{uri: commonAscensionMaterial.iconUrl}}
+                          style={{height: 60, width: 60}}
                         />
                       </IconWrapper>
                       <Small>{commonAscensionMaterial.name}</Small>
                     </View>
                   );
-                }
+                },
               )}
             </View>
           </SectionWrapper>
@@ -391,29 +378,29 @@ const ViewCharacter = ({ route, navigation }) => {
           {/* Talent Level up cost calculator */}
           <SectionWrapper>
             <Header>
-              <Small>Talent Level up Costs (Per Skill)</Small>
+              <Small style={{color: 'white'}}>
+                Talent Level up Costs (Per Skill)
+              </Small>
             </Header>
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                flexWrap: "wrap",
+                flexDirection: 'row',
+                alignItems: 'center',
+                flexWrap: 'wrap',
                 marginBottom: 20,
-              }}
-            >
-              {[...Array.from({ length: 10 }, (_, i) => i + 1)].map((n) => {
+              }}>
+              {[...Array.from({length: 10}, (_, i) => i + 1)].map(n => {
                 return (
                   n !== 1 && (
                     <AscensionLevelWrapper
                       onPress={() => setSelectedTalentLevelUpLevel(n)}
-                      key={"talent-level-up-header=#" + n}
+                      key={'talent-level-up-header=#' + n}
                       style={{
                         backgroundColor:
                           selectedTalentLevelUpLevel === n
                             ? activeTheme.SECONDARY_BACKGROUND
                             : null,
-                      }}
-                    >
+                      }}>
                       <Small>Lvl {n}</Small>
                     </AscensionLevelWrapper>
                   )
@@ -422,26 +409,24 @@ const ViewCharacter = ({ route, navigation }) => {
             </View>
             <View
               style={{
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "space-between",
-              }}
-            >
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+              }}>
               {characterTalentLevelUpInfo &&
                 characterTalentLevelUpInfo.map((talentLevelUpItem, idx) => {
                   return (
                     <View
-                      key={"talent-item-" + talentLevelUpItem.name + "-" + idx}
+                      key={'talent-item-' + talentLevelUpItem.name + '-' + idx}
                       style={{
-                        width: "45%",
+                        width: '45%',
                         marginBottom: 20,
-                        flexDirection: "column",
-                      }}
-                    >
-                      <IconWrapper style={{ width: "100%" }}>
+                        flexDirection: 'column',
+                      }}>
+                      <IconWrapper style={{width: '100%'}}>
                         <Image
-                          source={{ uri: talentLevelUpItem.iconUrl }}
-                          style={{ height: 60, width: 60 }}
+                          source={{uri: talentLevelUpItem.iconUrl}}
+                          style={{height: 60, width: 60}}
                         />
                       </IconWrapper>
                       <Small>
@@ -457,15 +442,15 @@ const ViewCharacter = ({ route, navigation }) => {
           {netInfo.isConnected && (
             <SectionWrapper>
               <Header>
-                <Small>Skills Media</Small>
+                <Small style={{color: 'white'}}>Skills Media</Small>
               </Header>
 
               <SkillsTabWrapper>
                 {currentlyViewingCharacter.combatSkills.map((skill, index) => {
                   return (
-                    skill.variants.some((x) => x.fileName) && (
+                    skill.variants.some(x => x.fileName) && (
                       <SkillTab
-                        key={"skill-tab-" + skill.name}
+                        key={'skill-tab-' + skill.name}
                         onPress={() => {
                           setActiveSkillGifTab(skill.name);
                           // setIsLoadingSkillGif(true);
@@ -475,8 +460,7 @@ const ViewCharacter = ({ route, navigation }) => {
                             activeSkillGifTab === skill.name
                               ? activeTheme.SECONDARY_BACKGROUND
                               : null,
-                        }}
-                      >
+                        }}>
                         <Small>{skill.name}</Small>
                       </SkillTab>
                     )
@@ -502,7 +486,7 @@ const ViewCharacter = ({ route, navigation }) => {
                   onLoadEnd={() => {
                     setIsLoadingSkillGif(false);
                   }}
-                  style={{ width: "100%", height: "100%" }}
+                  style={{width: '100%', height: '100%'}}
                 />
               </SkillGifWrapper>
             </SectionWrapper>
@@ -511,13 +495,13 @@ const ViewCharacter = ({ route, navigation }) => {
           {/* Skills Description */}
           <SectionWrapper>
             <Header>
-              <Small>Skills</Small>
+              <Small style={{color: 'white'}}>Skills</Small>
             </Header>
 
             {currentlyViewingCharacter.combatSkills.map(
               (combatSkill, index) => {
                 return (
-                  <ItemWrapper key={combatSkill + "-" + index}>
+                  <ItemWrapper key={combatSkill + '-' + index}>
                     <ItemTextWrapper>
                       <Image
                         source={{
@@ -525,16 +509,16 @@ const ViewCharacter = ({ route, navigation }) => {
                             combatTalentNamesStatic[index + 1]
                           }.png`,
                         }}
-                        style={{ width: 30, height: 30, marginRight: 16 }}
+                        style={{width: 30, height: 30, marginRight: 16}}
                       />
 
-                      <View style={{ flexShrink: 1 }}>
+                      <View style={{flexShrink: 1}}>
                         <Heading3>
                           {currentlyViewingCharacter.skillTalents[index].name}
                         </Heading3>
                       </View>
                     </ItemTextWrapper>
-                    <View style={{ padding: 8 }}>
+                    <View style={{padding: 8}}>
                       <Small>
                         {
                           currentlyViewingCharacter.skillTalents[index]
@@ -544,17 +528,17 @@ const ViewCharacter = ({ route, navigation }) => {
                     </View>
                   </ItemWrapper>
                 );
-              }
+              },
             )}
 
             <Header>
-              <Small>Passive Talents</Small>
+              <Small style={{color: 'white'}}>Passive Talents</Small>
             </Header>
 
             {currentlyViewingCharacter.passiveTalents.map(
               (passiveTalent, index) => {
                 return (
-                  <ItemWrapper key={passiveTalent.name + "-" + index}>
+                  <ItemWrapper key={passiveTalent.name + '-' + index}>
                     <ItemTextWrapper>
                       <Image
                         source={{
@@ -562,31 +546,31 @@ const ViewCharacter = ({ route, navigation }) => {
                             index + 1
                           }.png`,
                         }}
-                        style={{ width: 30, height: 30, marginRight: 16 }}
+                        style={{width: 30, height: 30, marginRight: 16}}
                       />
 
-                      <View style={{ flexShrink: 1 }}>
+                      <View style={{flexShrink: 1}}>
                         <Heading3>{passiveTalent.name}</Heading3>
                       </View>
                     </ItemTextWrapper>
-                    <View style={{ padding: 8 }}>
+                    <View style={{padding: 8}}>
                       <Small>{passiveTalent.description}</Small>
                     </View>
                   </ItemWrapper>
                 );
-              }
+              },
             )}
           </SectionWrapper>
           {/* Constellations Description */}
           <SectionWrapper>
             <Header>
-              <Small>Constellations</Small>
+              <Small style={{color: 'white'}}>Constellations</Small>
             </Header>
 
             {currentlyViewingCharacter.constellations.map(
               (constellation, index) => {
                 return (
-                  <ItemWrapper key={constellation.name + "-" + index}>
+                  <ItemWrapper key={constellation.name + '-' + index}>
                     <ItemTextWrapper>
                       <Image
                         source={{
@@ -594,19 +578,19 @@ const ViewCharacter = ({ route, navigation }) => {
                             index + 1
                           }.png`,
                         }}
-                        style={{ width: 30, height: 30, marginRight: 16 }}
+                        style={{width: 30, height: 30, marginRight: 16}}
                       />
 
-                      <View style={{ flexShrink: 1 }}>
+                      <View style={{flexShrink: 1}}>
                         <Heading3>{constellation.name}</Heading3>
                       </View>
                     </ItemTextWrapper>
-                    <View style={{ padding: 8, flexShrink: 1 }}>
+                    <View style={{padding: 8, flexShrink: 1}}>
                       <Small>{constellation.description}</Small>
                     </View>
                   </ItemWrapper>
                 );
-              }
+              },
             )}
           </SectionWrapper>
         </>
@@ -615,15 +599,15 @@ const ViewCharacter = ({ route, navigation }) => {
   );
 };
 
-ViewCharacter.sharedElements = (route) => {
-  const { name } = route.params;
+ViewCharacter.sharedElements = route => {
+  const {name} = route.params;
   return [`${name.toLowerCase()}-photo`];
 };
 
 const Container = styled.ScrollView`
   padding: 16px 20px;
   flex: 1;
-  background-color: ${(props) => props.theme.PRIMARY_BACKGROUND};
+  background-color: ${props => props.theme.PRIMARY_BACKGROUND};
 `;
 
 const ImageWrapper = styled.View`
@@ -655,7 +639,7 @@ const SectionWrapper = styled.View`
 const ItemWrapper = styled.View`
   width: 100%;
   margin-bottom: 16px;
-  background-color: ${(props) => props.theme.SECONDARY_BACKGROUND};
+  background-color: ${props => props.theme.SECONDARY_BACKGROUND};
   border-radius: 5px;
   padding: 8px;
 `;
@@ -680,7 +664,7 @@ const SkillTab = styled.TouchableOpacity`
 
 const SkillGifWrapper = styled.View`
   position: relative;
-  background-color: ${(props) => props.theme.SECONDARY_BACKGROUND};
+  background-color: ${props => props.theme.SECONDARY_BACKGROUND};
   width: 100%;
   height: 250px;
   border-radius: 5px;
@@ -696,7 +680,7 @@ const IconWrapper = styled.View`
   align-items: center;
   padding: 2px;
   border-radius: 8px;
-  background-color: ${(props) => props.theme.SECONDARY_BACKGROUND};
+  background-color: ${props => props.theme.SECONDARY_BACKGROUND};
 `;
 
 const AscensionLevelWrapper = styled.TouchableOpacity`

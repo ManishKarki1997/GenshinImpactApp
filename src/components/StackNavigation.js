@@ -58,7 +58,11 @@ const StackNavigation = () => {
             return <Heading3>{children}</Heading3>;
           },
           headerBackImage: () => (
-            <Ionicons name="arrow-back" size={20} color="white" />
+            <Ionicons
+              name="arrow-back"
+              size={20}
+              color={activeTheme.OPPOSITE_PRIMARY_BACKGROUND}
+            />
           ),
           headerRight: () => (
             <Feather

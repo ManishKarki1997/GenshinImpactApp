@@ -1,7 +1,7 @@
-import React from "react";
-import styled from "styled-components/native";
+import React from 'react';
+import styled from 'styled-components/native';
 
-import { fetchEvents } from "../../hooks/useEvents";
+import {fetchEvents} from '../../hooks/useEvents';
 import {
   Body,
   Heading2,
@@ -9,7 +9,7 @@ import {
   Small,
   Subtitle,
   VerySmall,
-} from "../Typography";
+} from '../Typography';
 
 import {
   SectionWrapper,
@@ -18,16 +18,22 @@ import {
   FlexboxListItem,
   IconWrapper,
   LoadingIconWrapper,
-} from "../styles";
+} from '../styles';
 import {
   ActivityIndicator,
   View,
   Image,
   Modal,
   TouchableOpacity,
-} from "react-native";
+} from 'react-native';
+
+import {ThemeContext} from '../../contexts/ThemeContext';
+import {DarkTheme, LightTheme} from '../../constants';
 
 const RenderEvents = () => {
+  const {theme} = React.useContext(ThemeContext);
+  const activeTheme = theme === 'light' ? LightTheme : DarkTheme;
+
   const [events, setEvents] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(null);
   const [modalVisible, setModalVisible] = React.useState(false);
@@ -54,57 +60,59 @@ const RenderEvents = () => {
         <View
           style={{
             flex: 1,
-            backgroundColor: "rgba(22, 35, 52, 0.9)",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+            backgroundColor: 'rgba(22, 35, 52, 0.9)',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
           <TouchableOpacity
             onPress={() => {
               setModalVisible(!modalVisible);
             }}
             style={{
               flex: 1,
-              width: "100%",
-              height: "100%",
-            }}
-          ></TouchableOpacity>
+              width: '100%',
+              height: '100%',
+            }}></TouchableOpacity>
           <View
             style={{
-              position: "absolute",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              height: "100%",
-            }}
-          >
+              position: 'absolute',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+              height: '100%',
+            }}>
             <View
               style={{
                 // justifyContent: "center",
                 // alignItems: "center",
                 // marginHorizontal: "auto",
-                width: "100%",
+                width: '100%',
                 minHeight: 300,
-              }}
-            >
+              }}>
               {selectedEvent && (
                 <>
                   <Image
-                    source={{ uri: selectedEvent.imageUrl }}
-                    style={{ height: 200, width: "100%" }}
+                    source={{uri: selectedEvent.imageUrl}}
+                    style={{height: 200, width: '100%'}}
                   />
 
                   <View
                     style={{
-                      alignItems: "center",
+                      alignItems: 'center',
                       paddingHorizontal: 10,
                       paddingVertical: 10,
-                    }}
-                  >
-                    <Heading2>{selectedEvent.name}</Heading2>
-                    <Subtitle>{selectedEvent.subtitle}</Subtitle>
+                    }}>
+                    <Heading2 style={{color: activeTheme.PRIMARY_BACKGROUND}}>
+                      {selectedEvent.name}
+                    </Heading2>
+                    <Subtitle
+                      style={{
+                        color: activeTheme.SECONDARY_BACKGROUND,
+                      }}>
+                      {selectedEvent.subtitle}
+                    </Subtitle>
 
-                    <Heading3 style={{ marginTop: 10 }}>Duration</Heading3>
+                    <Heading3 style={{marginTop: 10}}>Duration</Heading3>
                     <Duration>
                       <Small>{selectedEvent.durationStart}</Small>
                       <Body> - </Body>
@@ -121,7 +129,7 @@ const RenderEvents = () => {
 
       <SectionWrapper>
         <Header>
-          <Body>Events</Body>
+          <Body style={{color: 'white'}}>Events</Body>
         </Header>
 
         {isLoading && (
@@ -132,36 +140,41 @@ const RenderEvents = () => {
 
         {!isLoading &&
           events &&
-          events.map((e) => {
+          events.map(e => {
             return (
               <Event
                 onPress={() => {
                   setSelectedEvent(e);
                   setModalVisible(true);
                 }}
-                key={e._id}
-              >
+                key={e._id}>
                 <ImageWrapper>
                   <Image
-                    source={{ uri: e.imageUrl }}
+                    source={{uri: e.imageUrl}}
                     style={{
-                      width: "100%",
-                      height: "100%",
+                      width: '100%',
+                      height: '100%',
                     }}
                   />
                 </ImageWrapper>
 
                 <EventInfoWrapper>
-                  <Heading3>{e.name}</Heading3>
-                  <VerySmall>Start - {e.durationStart}</VerySmall>
-                  <VerySmall>End - {e.durationEnd}</VerySmall>
+                  <Heading3 style={{color: activeTheme.PRIMARY_TEXT}}>
+                    {e.name}
+                  </Heading3>
+                  <VerySmall style={{color: activeTheme.SECONDARY_TEXT}}>
+                    Start - {e.durationStart}
+                  </VerySmall>
+                  <VerySmall style={{color: activeTheme.SECONDARY_TEXT}}>
+                    End - {e.durationEnd}
+                  </VerySmall>
 
-                  {e.rewards.map((r) => {
+                  {e.rewards.map(r => {
                     return (
-                      <RewardWrapper key={"reward-" + r.name}>
-                        <Small style={{ marginRight: 8 }}>&bull;</Small>
-                        {r.count !== "" && (
-                          <Body style={{ marginRight: 8 }}>{r.count}</Body>
+                      <RewardWrapper key={'reward-' + r.name}>
+                        <Small style={{marginRight: 8}}>&bull;</Small>
+                        {r.count !== '' && (
+                          <Body style={{marginRight: 8}}>{r.count}</Body>
                         )}
 
                         <VerySmall>{r?.name}</VerySmall>
@@ -179,11 +192,11 @@ const RenderEvents = () => {
 };
 
 const Container = styled.View`
-  background-color: ${(props) => props.theme.PRIMARY_BACKGROUND};
+  background-color: ${props => props.theme.PRIMARY_BACKGROUND};
 `;
 
 const Event = styled.TouchableOpacity`
-  background-color: ${(props) => props.theme.SECONDARY_BACKGROUND};
+  background-color: ${props => props.theme.SECONDARY_BACKGROUND};
   padding: 10px 20px;
   border-radius: 5px;
   margin-bottom: 20px;

@@ -1,15 +1,15 @@
-import React from "react";
-import styled from "styled-components/native";
-import { ActivityIndicator, FlatList, Image } from "react-native";
-import { SharedElement } from "react-navigation-shared-element";
+import React from 'react';
+import styled from 'styled-components/native';
+import {ActivityIndicator, FlatList, Image} from 'react-native';
+import {SharedElement} from 'react-navigation-shared-element';
 
-import { Body } from "../components/Typography";
-import { fetchCharacters } from "../hooks/useCharacters";
+import {Body} from '../components/Typography';
+import {fetchCharacters} from '../hooks/useCharacters';
 
-import { useAppStateContext, useAppDispatchContext } from "../contexts";
+import {useAppStateContext, useAppDispatchContext} from '../contexts';
 
-const CharactersScreen = ({ navigation }) => {
-  const { isLoading, characters } = useAppStateContext();
+const CharactersScreen = ({navigation}) => {
+  const {isLoading, characters} = useAppStateContext();
   const appDispatch = useAppDispatchContext();
 
   const [isCharactersImageLoadedObj, setIsCharactersImageLoadedObj] =
@@ -18,23 +18,23 @@ const CharactersScreen = ({ navigation }) => {
   React.useEffect(() => {
     async function getCharacters() {
       appDispatch({
-        type: "SET_LOADING",
+        type: 'SET_LOADING',
         payload: {
           isLoading: true,
         },
       });
 
-      const res = await fetchCharacters({ infoDataSize: "minimal" });
+      const res = await fetchCharacters({infoDataSize: 'minimal'});
 
       appDispatch({
-        type: "SET_CHARACTERS",
+        type: 'SET_CHARACTERS',
         payload: {
           characters: res.data.payload.characters,
         },
       });
 
       const tempObj = {};
-      res.data.payload.characters.forEach((c) => {
+      res.data.payload.characters.forEach(c => {
         tempObj[c.name] = false;
       });
 
@@ -44,15 +44,14 @@ const CharactersScreen = ({ navigation }) => {
     getCharacters();
   }, []);
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({item}) => {
     return (
       <CharacterItem
         onPress={() =>
-          navigation.navigate("View Character", {
+          navigation.navigate('View Character', {
             name: item.name,
           })
-        }
-      >
+        }>
         <SharedElement id={`${item.name.toLowerCase()}-photo`}>
           <ImageWrapper>
             {isCharactersImageLoadedObj &&
@@ -63,9 +62,9 @@ const CharactersScreen = ({ navigation }) => {
               )}
             <Image
               // resizeMode="cover"
-              style={{ width: 160, height: "100%" }}
+              style={{width: 160, height: '100%'}}
               source={{
-                uri: `https://res.cloudinary.com/dnoibyqq2/image/upload/v1617899636/genshin-app/characters/${item.name.toLowerCase()}/card.png`,
+                uri: `https://res.cloudinary.com/dnoibyqq2/image/upload/v1617899636/genshin-app/characters/${item.name.toLowerCase()}/compressed.jpg`,
               }}
               onLoadEnd={() => {
                 setIsCharactersImageLoadedObj({
@@ -92,11 +91,11 @@ const CharactersScreen = ({ navigation }) => {
       )}
       {characters && (
         <FlatList
-          style={{ flex: 1 }}
-          columnWrapperStyle={{ justifyContent: "space-around" }}
+          style={{flex: 1}}
+          columnWrapperStyle={{justifyContent: 'space-around'}}
           numColumns={2}
           data={characters}
-          keyExtractor={(item) => item.name}
+          keyExtractor={item => item.name}
           renderItem={renderItem}
         />
       )}
@@ -107,12 +106,12 @@ const CharactersScreen = ({ navigation }) => {
 const Container = styled.View`
   padding: 16px 24px;
   flex: 1;
-  background-color: ${(props) => props.theme.PRIMARY_BACKGROUND};
+  background-color: ${props => props.theme.PRIMARY_BACKGROUND};
 `;
 
 const CharacterItem = styled.TouchableOpacity`
   margin-bottom: 32px;
-  /* background-color: ${(props) => props.theme.SECONDARY_BACKGROUND}; */
+  /* background-color: ${props => props.theme.SECONDARY_BACKGROUND}; */
 `;
 
 const TextWrapper = styled.View`

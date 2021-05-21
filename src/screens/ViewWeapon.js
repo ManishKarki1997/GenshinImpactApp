@@ -68,8 +68,7 @@ const ViewWeapon = ({route, navigation}) => {
   const {theme} = React.useContext(ThemeContext);
   const activeTheme = theme === 'light' ? LightTheme : DarkTheme;
 
-  const {isLoading, currentlyViewingWeapon, buildWeaponsList} =
-    useAppStateContext();
+  const {isLoading, currentlyViewingWeapon} = useAppStateContext();
   const appDispatch = useAppDispatchContext();
 
   const [selectedWeaponLevelNo, setSelectedWeaponLevelNo] = React.useState(80);
@@ -79,7 +78,7 @@ const ViewWeapon = ({route, navigation}) => {
     navigation.setOptions({
       title: name.length > 16 ? `${name.substring(0, 12)}...` : name,
     });
-  }, []);
+  }, [currentlyViewingWeapon, name, navigation]);
 
   React.useEffect(() => {
     if (!currentlyViewingWeapon) return;
@@ -111,12 +110,14 @@ const ViewWeapon = ({route, navigation}) => {
     }
 
     getWeaponDetail();
-  }, []);
+  }, [appDispatch, route.params.name]);
 
   return (
     <Container>
       <SharedElement
-        style={{justifyContent: 'center'}}
+        style={{
+          justifyContent: 'center',
+        }}
         id={`weapon-${name.toLowerCase()}-photo`}>
         <View style={{justifyContent: 'center', flexDirection: 'row'}}>
           <ImageWrapper>
@@ -158,119 +159,119 @@ const ViewWeapon = ({route, navigation}) => {
         </View>
       </SharedElement>
 
-      {isLoading && (
-        <LoadingIconWrapper>
-          <ActivityIndicator size="large" color="#e04352" />
-        </LoadingIconWrapper>
-      )}
+      <MainWrapper style={{minHeight: 300}}>
+        {isLoading ? (
+          <LoadingIconWrapper>
+            <ActivityIndicator size="large" color="#e04352" />
+          </LoadingIconWrapper>
+        ) : (
+          currentlyViewingWeapon && (
+            <>
+              <TextWrapper>
+                <Heading2>{currentlyViewingWeapon.rarity}*</Heading2>
+                <Body>({currentlyViewingWeapon.weaponType})</Body>
+                <Heading3 style={{marginBottom: 16, justifyContent: 'center'}}>
+                  {currentlyViewingWeapon.name}
+                </Heading3>
+                <Subtitle>{currentlyViewingWeapon.passiveAbility}</Subtitle>
+                <SubtitleItalic>
+                  {currentlyViewingWeapon.description}
+                </SubtitleItalic>
+              </TextWrapper>
 
-      {!isLoading && currentlyViewingWeapon && (
-        <MainWrapper>
-          <TextWrapper>
-            <Heading2>{currentlyViewingWeapon.rarity}*</Heading2>
-            <Body>({currentlyViewingWeapon.weaponType})</Body>
-            <Heading3 style={{marginBottom: 16, justifyContent: 'center'}}>
-              {currentlyViewingWeapon.name}
-            </Heading3>
-            <Subtitle>{currentlyViewingWeapon.passiveAbility}</Subtitle>
-            <SubtitleItalic>
-              {currentlyViewingWeapon.description}
-            </SubtitleItalic>
-          </TextWrapper>
+              {/* materials used to ascend this weapon */}
+              <SectionWrapper style={{marginTop: 32}}>
+                <Header>
+                  <Body style={{color: 'white'}}>Ascension Materials</Body>
+                </Header>
 
-          {/* materials used to ascend this weapon */}
-          <SectionWrapper style={{marginTop: 32}}>
-            <Header>
-              <Body>Ascension Materials</Body>
-            </Header>
+                <FlexboxListWrapper>
+                  {currentlyViewingWeapon.ascensionMaterials.length === 0 && (
+                    <Small>Weapon Yet To Be Released</Small>
+                  )}
+                  {currentlyViewingWeapon.ascensionMaterials.map(m => {
+                    return (
+                      <FlexboxListItem
+                        key={'ascension-material-' + m.name}
+                        style={{width: '45%', marginBottom: 24}}>
+                        <IconWrapper>
+                          <Image
+                            style={{height: 80, width: 80}}
+                            source={{uri: m.iconUrl}}
+                          />
+                        </IconWrapper>
+                        <Small>{m.name}</Small>
+                      </FlexboxListItem>
+                    );
+                  })}
+                </FlexboxListWrapper>
+              </SectionWrapper>
 
-            <FlexboxListWrapper>
-              {currentlyViewingWeapon.ascensionMaterials.length === 0 && (
-                <Small>Weapon Yet To Be Released</Small>
-              )}
-              {currentlyViewingWeapon.ascensionMaterials.map(m => {
-                return (
-                  <FlexboxListItem
-                    key={'ascension-material-' + m.name}
-                    style={{width: '45%', marginBottom: 24}}>
-                    <IconWrapper>
-                      <Image
-                        style={{height: 80, width: 80}}
-                        source={{uri: m.iconUrl}}
-                      />
-                    </IconWrapper>
-                    <Small>{m.name}</Small>
-                  </FlexboxListItem>
-                );
-              })}
-            </FlexboxListWrapper>
-          </SectionWrapper>
+              {/* Weapon ascension cost calculator */}
+              <SectionWrapper>
+                <Header>
+                  <Small style={{color: 'white'}}>Ascension Cost</Small>
+                </Header>
 
-          {/* Weapon ascension cost calculator */}
-          <SectionWrapper>
-            <Header>
-              <Small>Ascension Cost</Small>
-            </Header>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    marginBottom: 30,
+                  }}>
+                  {weaponLevelUpHeaderInfo.map((info, index) => {
+                    return (
+                      <AscensionLevelWrapper
+                        key={info.name + '-' + info.count + '-' + index}
+                        onPress={() => setSelectedWeaponLevelNo(info.level)}
+                        style={{
+                          backgroundColor:
+                            selectedWeaponLevelNo === info.level
+                              ? activeTheme.SECONDARY_BACKGROUND
+                              : null,
+                        }}>
+                        <Small>
+                          {info.name} Lv({info.level})
+                        </Small>
+                      </AscensionLevelWrapper>
+                    );
+                  })}
+                </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                marginBottom: 30,
-              }}>
-              {weaponLevelUpHeaderInfo.map((info, index) => {
-                return (
-                  <AscensionLevelWrapper
-                    key={info.name + '-' + info.count + '-' + index}
-                    onPress={() => setSelectedWeaponLevelNo(info.level)}
-                    style={{
-                      backgroundColor:
-                        selectedWeaponLevelNo === info.level
-                          ? activeTheme.SECONDARY_BACKGROUND
-                          : null,
-                    }}>
-                    <Small>
-                      {info.name} Lv({info.level})
-                    </Small>
-                  </AscensionLevelWrapper>
-                );
-              })}
-            </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                  }}>
+                  {weaponUpgradeInfo &&
+                    weaponUpgradeInfo.map((mat, index) => {
+                      return (
+                        <View
+                          key={mat?.name + '-material-' + index}
+                          style={{
+                            marginBottom: 30,
+                            width: '45%',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                          }}>
+                          <IconWrapper style={{width: '100%', height: 70}}>
+                            <Heading3>{mat.count} x </Heading3>
+                            <Image
+                              source={{uri: mat.iconUrl}}
+                              style={{height: 50, width: 50}}
+                            />
+                          </IconWrapper>
+                          <Small>{mat.name}</Small>
+                        </View>
+                      );
+                    })}
+                </View>
+              </SectionWrapper>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-              }}>
-              {weaponUpgradeInfo &&
-                weaponUpgradeInfo.map((mat, index) => {
-                  return (
-                    <View
-                      key={mat?.name + '-material-' + index}
-                      style={{
-                        marginBottom: 30,
-                        width: '45%',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                      }}>
-                      <IconWrapper style={{width: '100%', height: 70}}>
-                        <Heading3>{mat.count} x </Heading3>
-                        <Image
-                          source={{uri: mat.iconUrl}}
-                          style={{height: 50, width: 50}}
-                        />
-                      </IconWrapper>
-                      <Small>{mat.name}</Small>
-                    </View>
-                  );
-                })}
-            </View>
-          </SectionWrapper>
-
-          {/* characters that can use this weapon */}
-          {/* <SectionWrapper style={{ marginTop: 32 }}>
+              {/* characters that can use this weapon */}
+              {/* <SectionWrapper style={{ marginTop: 32 }}>
             <Header>
               <Body>Applicable Characters</Body>
             </Header>
@@ -298,8 +299,10 @@ const ViewWeapon = ({route, navigation}) => {
             </FlexboxListWrapper>
           </SectionWrapper>
         */}
-        </MainWrapper>
-      )}
+            </>
+          )
+        )}
+      </MainWrapper>
     </Container>
   );
 };
@@ -331,7 +334,6 @@ const ImageWrapper = styled.View`
   align-items: center;
   border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 32px;
   width: 200px;
   height: 180px;
 `;

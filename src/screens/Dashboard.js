@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import styled from 'styled-components/native';
 import {
@@ -86,7 +87,7 @@ const Dashboard = () => {
     }
 
     handleCharacterPositionSetting();
-  }, [date, settingsDispatch]);
+  }, [settingsDispatch]);
 
   React.useEffect(() => {
     if (!todaysDay) return;
@@ -129,6 +130,7 @@ const Dashboard = () => {
             alignItems: 'center',
           }}>
           <TouchableOpacity
+            disabled={isLoading}
             style={{marginRight: 8}}
             onPress={() => {
               const prevDay = weekDays.findIndex(x => x === todaysDay) - 1;
@@ -141,6 +143,7 @@ const Dashboard = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
+            disabled={isLoading}
             onPress={() => {
               const nextDay = weekDays.findIndex(x => x === todaysDay) + 1;
 
@@ -244,7 +247,7 @@ const Dashboard = () => {
       {/* Talent books for the selected day */}
       <SectionWrapper style={{marginTop: 20}}>
         <Header>
-          <Body>Talent Books</Body>
+          <Body style={{color: 'white'}}>Talent Books</Body>
         </Header>
 
         {isLoading && (
@@ -299,7 +302,7 @@ const Dashboard = () => {
       {/* Weapon ascension materials for the selected day */}
       <SectionWrapper style={{marginTop: 0}}>
         <Header>
-          <Body>Weapon Ascension Materials</Body>
+          <Body style={{color: 'white'}}>Weapon Ascension Materials</Body>
         </Header>
 
         {isLoading && (

@@ -1,8 +1,9 @@
-import React from "react";
-import styled from "styled-components/native";
+import React from 'react';
+import styled from 'styled-components/native';
 
 const Header = styled.View`
-  background-color: #e04352;
+  background-color: ${props => props.theme.SECTION_TITLE_BACKGROUND};
+  /* background-color: #e04352; */
   border-radius: 8px;
   align-self: flex-start;
   text-align: center;
@@ -41,7 +42,7 @@ const IconWrapper = styled.View`
   padding: 2px;
   margin-bottom: 16px;
   border-radius: 8px;
-  background-color: ${(props) => props.theme.SECONDARY_BACKGROUND};
+  background-color: ${props => props.theme.SECONDARY_BACKGROUND};
 `;
 
 const LoadingIconWrapper = styled.View`
