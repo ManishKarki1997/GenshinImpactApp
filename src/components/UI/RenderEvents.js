@@ -102,23 +102,30 @@ const RenderEvents = () => {
                       paddingHorizontal: 10,
                       paddingVertical: 10,
                     }}>
-                    <Heading2 style={{color: activeTheme.PRIMARY_BACKGROUND}}>
+                    <Heading2 style={{color: '#fff'}}>
                       {selectedEvent.name}
                     </Heading2>
                     <Subtitle
                       style={{
-                        color: activeTheme.SECONDARY_BACKGROUND,
+                        color: '#e3e4e8',
+                        marginTop: 12,
                       }}>
                       {selectedEvent.subtitle}
                     </Subtitle>
 
-                    <Heading3 style={{marginTop: 10}}>Duration</Heading3>
+                    <Heading3 style={{marginTop: 10, color: '#fff'}}>
+                      Duration
+                    </Heading3>
                     <Duration>
-                      <Small>{selectedEvent.durationStart}</Small>
-                      <Body> - </Body>
-                      <Small>{selectedEvent.durationEnd}</Small>
+                      <Small style={{color: '#fff'}}>
+                        {selectedEvent.durationStart}
+                      </Small>
+                      <Body style={{color: '#e3e4e8'}}> - </Body>
+                      <Small style={{color: '#fff'}}>
+                        {selectedEvent.durationEnd}
+                      </Small>
                     </Duration>
-                    <Small>Server Time</Small>
+                    <Small style={{color: '#fff'}}>Server Time</Small>
                   </View>
                 </>
               )}

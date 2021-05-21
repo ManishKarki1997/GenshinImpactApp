@@ -25,7 +25,6 @@ const findCharacterAscensionMaterialsInfo = (character, ascensionLevel) => {
         ...characterSpecialty,
       };
     } else if (mat.type === 'COMMON_ENEMY_MATERIAL') {
-      console.log(mat);
       return {
         ...mat,
         ...character.commonAscensionMaterials.find(x => x.rarity == mat.rarity),

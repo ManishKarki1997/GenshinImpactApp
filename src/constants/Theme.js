@@ -12,7 +12,7 @@ const DarkTheme = {
   ACTIVE_ICON_COLOR: 'white',
   INACTIVE_ICON_COLOR: '#868687',
   OPPOSITE_COLOR_PRIMARY_TEXT: '#fff',
-  OPPOSITE_COLOR_SECONDARY_TEXT: '#dddee2',
+  OPPOSITE_COLOR_SECONDARY_TEXT: '#e3e4e8',
 };
 
 const LightTheme = {
@@ -27,6 +27,8 @@ const LightTheme = {
   SECTION_TITLE_BACKGROUND: '#e04352',
   ACTIVE_ICON_COLOR: '#e04352',
   INACTIVE_ICON_COLOR: '#dddee2',
+  OPPOSITE_COLOR_PRIMARY_TEXT: '#fff',
+  OPPOSITE_COLOR_SECONDARY_TEXT: '#e3e4e8',
 };
 
 export {DarkTheme, LightTheme};
