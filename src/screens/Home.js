@@ -16,6 +16,8 @@ import SettingsScreen from './Settings';
 
 import {ThemeContext} from '../contexts/ThemeContext';
 import {DarkTheme, LightTheme} from '../constants';
+import {fetchLatestUpdateInfo} from '../hooks/useGeneralInfo';
+import {useSettingsDispatchContext, useSettingsStateContext} from '../contexts';
 
 const Tab = createBottomTabNavigator();
 const WeaponStack = createSharedElementStackNavigator();
@@ -47,6 +49,12 @@ const CharactersScreenStack = () => {
 };
 
 const Home = ({navigation}) => {
+  const settingsDispatch = useSettingsDispatchContext();
+
+  const settingsValue = useSettingsStateContext();
+
+  const {newUpdateInfo} = settingsValue;
+
   const {theme} = React.useContext(ThemeContext);
   const activeTheme = theme === 'light' ? LightTheme : DarkTheme;
 
@@ -63,6 +71,21 @@ const Home = ({navigation}) => {
       ),
     });
   }, [navigation]);
+
+  React.useEffect(() => {
+    async function fetchPossibleNewUpdateInfo() {
+      const updateRes = await fetchLatestUpdateInfo();
+
+      settingsDispatch({
+        type: 'SET_NEW_UPDATE_INFO',
+        payload: {
+          newUpdateInfo: updateRes.data.payload.update,
+        },
+      });
+    }
+
+    fetchPossibleNewUpdateInfo();
+  }, [settingsDispatch]);
 
   return (
     <Tab.Navigator
@@ -163,6 +186,13 @@ const Home = ({navigation}) => {
       <Tab.Screen
         options={{
           tabBarLabel: 'Settings',
+          tabBarBadge:
+            newUpdateInfo?.version > settingsValue.updateVersion ? '1' : null,
+          // tabBarBadge:{  newUpdateInfo.version > settingsValue.updateVersion ? "1" : null},
+          tabBarBadgeStyle: {
+            fontSize: 10,
+            padding: 0,
+          },
           tabBarIcon: ({color, size, focused}) => (
             <Feather
               name="settings"

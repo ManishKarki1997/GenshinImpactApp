@@ -11,6 +11,8 @@ export const useSettingsDispatchContext = () =>
 
 const initialSettings = {
   characterPositionInHomePageMaterials: 'MODAL',
+  updateVersion: 1.1,
+  newUpdateInfo: null,
 };
 
 const settingsReducer = (state, action) => {
@@ -20,6 +22,12 @@ const settingsReducer = (state, action) => {
         ...state,
         characterPositionInHomePageMaterials:
           action.payload.characterPositionInHomePageMaterials,
+      };
+
+    case 'SET_NEW_UPDATE_INFO':
+      return {
+        ...state,
+        newUpdateInfo: action.payload.newUpdateInfo,
       };
 
     default:

@@ -12,7 +12,11 @@ import {
   SubtitleItalic,
   VerySmall,
 } from '../components/Typography';
-import {ThemeContext, useSettingsDispatchContext} from '../contexts';
+import {
+  ThemeContext,
+  useSettingsDispatchContext,
+  useSettingsStateContext,
+} from '../contexts';
 import {DarkTheme, LightTheme} from '../constants';
 
 const charactersPositionOptions = [
@@ -31,6 +35,9 @@ const Settings = () => {
   const activeTheme = theme === 'light' ? LightTheme : DarkTheme;
 
   const settingsDispatch = useSettingsDispatchContext();
+  const settingsValue = useSettingsStateContext();
+
+  const {newUpdateInfo} = settingsValue;
 
   const [selectedCharacterPosition, setSelectedCharacterPosition] =
     React.useState('MODAL');
@@ -67,6 +74,34 @@ const Settings = () => {
             />
           </SettingsItemRight>
         </SettingsItem>
+
+        {newUpdateInfo && newUpdateInfo?.version > settingsValue.updateVersion && (
+          <UpdateWrapper>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}>
+              <Heading3 style={{color: '#e04352'}}>Update Available</Heading3>
+              <TouchableOpacity
+                style={{
+                  marginLeft: 4,
+                  backgroundColor: '#e04352',
+                  padding: 6,
+                  borderRadius: 5,
+                }}
+                onPress={() => Linking.openURL(newUpdateInfo?.downloadUrl)}>
+                <Small style={{color: 'white'}}>Download</Small>
+              </TouchableOpacity>
+            </View>
+
+            <UpdateContentWrapper>
+              {newUpdateInfo &&
+                newUpdateInfo.fixes.map(fix => <Small>- {fix}</Small>)}
+            </UpdateContentWrapper>
+          </UpdateWrapper>
+        )}
 
         <CreditsWrapper>
           <Body>Credits</Body>
@@ -136,6 +171,18 @@ const CreditsWrapper = styled.View`
   background-color: ${props => props.theme.SECONDARY_BACKGROUND};
   margin-top: 50px;
   padding: 8px;
+  border-radius: 5px;
+`;
+
+const UpdateWrapper = styled.View`
+  margin-top: 50px;
+  margin-top: 50px;
+`;
+
+const UpdateContentWrapper = styled.View`
+  margin-top: 30px;
+  background-color: ${props => props.theme.SECONDARY_BACKGROUND};
+  padding: 16px;
   border-radius: 5px;
 `;
 

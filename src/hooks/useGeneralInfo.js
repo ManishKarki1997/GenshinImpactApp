@@ -9,3 +9,11 @@ export const fetchMaterialsForTheDay = async day => {
 
   return res;
 };
+
+export const fetchLatestUpdateInfo = async () => {
+  const url = `${API_URL}/api/updates/latest`;
+
+  const res = await axios.get(url);
+
+  return res;
+};
