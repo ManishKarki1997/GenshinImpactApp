@@ -35,7 +35,10 @@ import {
   useAppStateContext,
   useAppDispatchContext,
   useSettingsDispatchContext,
+  useThemeContext,
 } from '../contexts';
+
+import {DarkTheme, LightTheme} from '../constants';
 
 import {fetchMaterialsForTheDay} from '../hooks/useGeneralInfo';
 import {getItem} from '../hooks/useAsyncStorage';
@@ -57,6 +60,9 @@ const weekDays = [
 const date = new Date();
 
 const Dashboard = () => {
+  const {theme} = useThemeContext();
+  const activeTheme = theme === 'dark' ? DarkTheme : LightTheme;
+
   const {isLoading, talentBooksToFarmForTheDay, weaponAscMatsToFarmForTheDay} =
     useAppStateContext();
 
@@ -139,7 +145,11 @@ const Dashboard = () => {
                 weekDays[prevDay < 0 ? weekDays.length - 1 : prevDay],
               );
             }}>
-            <Ionicons name="arrow-back-outline" size={24} color="black" />
+            <Ionicons
+              name="arrow-back-outline"
+              size={24}
+              color={activeTheme.PRIMARY_TEXT}
+            />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -151,7 +161,11 @@ const Dashboard = () => {
                 weekDays[nextDay > weekDays.length - 1 ? 0 : nextDay],
               );
             }}>
-            <Ionicons name="arrow-forward-outline" size={24} color="black" />
+            <Ionicons
+              name="arrow-forward-outline"
+              size={24}
+              color={activeTheme.PRIMARY_TEXT}
+            />
           </TouchableOpacity>
         </View>
       </View>
