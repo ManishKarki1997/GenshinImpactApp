@@ -96,6 +96,20 @@ const Dashboard = () => {
   }, [settingsDispatch]);
 
   React.useEffect(() => {
+    async function handleSetShowEventsFromAsyncStorage() {
+      const showEventsVal = await getItem('show-events');
+      settingsDispatch({
+        type: 'SET_SHOW_EVENTS',
+        payload: {
+          showEvents: Boolean(showEventsVal) || true,
+        },
+      });
+    }
+
+    handleSetShowEventsFromAsyncStorage();
+  }, []);
+
+  React.useEffect(() => {
     if (!todaysDay) return;
     setSelectedMaterialInfo(null);
 
@@ -372,7 +386,7 @@ const Dashboard = () => {
         </FlexboxListWrapper>
       </SectionWrapper>
 
-      <RenderEvents />
+      {settingsValue.showEvents && <RenderEvents />}
     </Container>
   );
 };

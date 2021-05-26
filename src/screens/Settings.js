@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Linking, TouchableOpacity} from 'react-native';
 import styled from 'styled-components/native';
 import SelectInput from 'react-native-select-input-ios';
+import {Picker} from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
@@ -19,7 +20,7 @@ import {
 } from '../contexts';
 import {DarkTheme, LightTheme} from '../constants';
 
-const charactersPositionOptions = [
+const materialsPositionOptions = [
   {
     value: 'BELOW',
     label: 'Below the Material',
@@ -42,6 +43,9 @@ const Settings = () => {
   const [selectedCharacterPosition, setSelectedCharacterPosition] =
     React.useState('MODAL');
 
+  const [selectedShowEventsInDashboard, setSelectedShowEventsInDashboard] =
+    React.useState('HD');
+
   const handleCharacterPositionSettings = async val => {
     setSelectedCharacterPosition(val);
     await AsyncStorage.setItem('characters-position-in-dashboard', val);
@@ -54,6 +58,18 @@ const Settings = () => {
     });
   };
 
+  const handleShowEventsInDashboard = async val => {
+    setSelectedShowEventsInDashboard(val);
+    await AsyncStorage.setItem('show-events', val.toString());
+
+    settingsDispatch({
+      type: 'SET_SHOW_EVENTS',
+      payload: {
+        showEvents: val,
+      },
+    });
+  };
+
   return (
     <Container>
       <Heading3>Settings</Heading3>
@@ -61,17 +77,57 @@ const Settings = () => {
       <View style={{marginTop: 20}}>
         <SettingsItem>
           <SettingsItemLeft>
-            <Small>Characters' position in the home page</Small>
+            <Small>Materials' position in the home page</Small>
           </SettingsItemLeft>
           <SettingsItemRight>
-            <SelectInput
-              style={{
-                backgroundColor: activeTheme.SECONDARY_BACKGROUND,
-              }}
-              value={selectedCharacterPosition}
-              options={charactersPositionOptions}
-              onSubmitEditing={val => handleCharacterPositionSettings(val)}
-            />
+            <Picker
+              dropdownIconColor={activeTheme.PRIMARY_TEXT}
+              selectedValue={selectedCharacterPosition}
+              onValueChange={(itemValue, itemIndex) =>
+                handleCharacterPositionSettings(itemValue)
+              }>
+              {materialsPositionOptions.map(p => {
+                return (
+                  <Picker.Item
+                    key={p.label}
+                    style={{
+                      color: activeTheme.PRIMARY_TEXT,
+                    }}
+                    label={p.label}
+                    value={p.value}
+                  />
+                );
+              })}
+            </Picker>
+          </SettingsItemRight>
+        </SettingsItem>
+
+        <SettingsItem>
+          <SettingsItemLeft>
+            <Small>Show/Hide events from dashboard</Small>
+          </SettingsItemLeft>
+          <SettingsItemRight>
+            <Picker
+              dropdownIconColor={activeTheme.PRIMARY_TEXT}
+              selectedValue={selectedShowEventsInDashboard}
+              onValueChange={(itemValue, itemIndex) => {
+                handleShowEventsInDashboard(itemValue);
+              }}>
+              <Picker.Item
+                style={{
+                  color: activeTheme.PRIMARY_TEXT,
+                }}
+                label="Show"
+                value={true}
+              />
+              <Picker.Item
+                style={{
+                  color: activeTheme.PRIMARY_TEXT,
+                }}
+                label="Hide"
+                value={false}
+              />
+            </Picker>
           </SettingsItemRight>
         </SettingsItem>
 
@@ -135,7 +191,8 @@ const Settings = () => {
 
         <View style={{marginTop: 40}}>
           <Small>
-            Want to create your own app or website like this? Use my free
+            Want to create your own app or website like this? Use my free public
+            API.
           </Small>
           <TouchableOpacity
             onPress={() => Linking.openURL('https://genshin-api.netlify.app/')}>
@@ -157,6 +214,7 @@ const SettingsItem = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 20px;
 `;
 
 const SettingsItemLeft = styled.View`

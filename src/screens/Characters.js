@@ -6,11 +6,16 @@ import {SharedElement} from 'react-navigation-shared-element';
 import {Body} from '../components/Typography';
 import {fetchCharacters} from '../hooks/useCharacters';
 
-import {useAppStateContext, useAppDispatchContext} from '../contexts';
+import {
+  useAppStateContext,
+  useAppDispatchContext,
+  useSettingsStateContext,
+} from '../contexts';
 
 const CharactersScreen = ({navigation}) => {
   const {isLoading, characters} = useAppStateContext();
   const appDispatch = useAppDispatchContext();
+  const settingsValue = useSettingsStateContext();
 
   const [isCharactersImageLoadedObj, setIsCharactersImageLoadedObj] =
     React.useState(null);
@@ -64,7 +69,10 @@ const CharactersScreen = ({navigation}) => {
               // resizeMode="cover"
               style={{width: 160, height: '100%'}}
               source={{
-                uri: `https://res.cloudinary.com/dnoibyqq2/image/upload/v1617899636/genshin-app/characters/${item.name.toLowerCase()}/compressed.jpg`,
+                uri:
+                  settingsValue.imageQuality === 'COMPRESSED'
+                    ? item.compressedImageURL
+                    : item.cardImageURL,
               }}
               onLoadEnd={() => {
                 setIsCharactersImageLoadedObj({

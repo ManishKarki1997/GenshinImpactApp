@@ -147,7 +147,7 @@ const RenderEvents = () => {
 
         {!isLoading &&
           events &&
-          events.map(e => {
+          events.slice(0, 3).map(e => {
             return (
               <Event
                 onPress={() => {
