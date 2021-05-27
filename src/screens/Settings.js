@@ -44,7 +44,12 @@ const Settings = () => {
     React.useState('MODAL');
 
   const [selectedShowEventsInDashboard, setSelectedShowEventsInDashboard] =
-    React.useState('HD');
+    React.useState(true);
+
+  const [
+    selectedShowResinTimerInDashboard,
+    setSelectedShowResinTimerInDashboard,
+  ] = React.useState(true);
 
   const handleCharacterPositionSettings = async val => {
     setSelectedCharacterPosition(val);
@@ -69,6 +74,26 @@ const Settings = () => {
       },
     });
   };
+
+  const handleShowResinTimerInDashboard = async val => {
+    setSelectedShowResinTimerInDashboard(val);
+    await AsyncStorage.setItem('show-resin-timer-in-dashboard', val.toString());
+
+    settingsDispatch({
+      type: 'SET_SHOW_RESIN_TIMER',
+      payload: {
+        showResinTimer: val,
+      },
+    });
+  };
+
+  React.useEffect(() => {
+    setSelectedShowEventsInDashboard(settingsValue.showEvents);
+    setSelectedShowResinTimerInDashboard(settingsValue.showResinTimer);
+    setSelectedCharacterPosition(
+      settingsValue.characterPositionInHomePageMaterials,
+    );
+  }, [settingsValue]);
 
   return (
     <Container>
@@ -104,7 +129,7 @@ const Settings = () => {
 
         <SettingsItem>
           <SettingsItemLeft>
-            <Small>Show/Hide events from dashboard</Small>
+            <Small>Show/Hide events from the dashboard</Small>
           </SettingsItemLeft>
           <SettingsItemRight>
             <Picker
@@ -112,6 +137,35 @@ const Settings = () => {
               selectedValue={selectedShowEventsInDashboard}
               onValueChange={(itemValue, itemIndex) => {
                 handleShowEventsInDashboard(itemValue);
+              }}>
+              <Picker.Item
+                style={{
+                  color: activeTheme.PRIMARY_TEXT,
+                }}
+                label="Show"
+                value={true}
+              />
+              <Picker.Item
+                style={{
+                  color: activeTheme.PRIMARY_TEXT,
+                }}
+                label="Hide"
+                value={false}
+              />
+            </Picker>
+          </SettingsItemRight>
+        </SettingsItem>
+
+        <SettingsItem>
+          <SettingsItemLeft>
+            <Small>Show/Hide resin timer from the dashboard</Small>
+          </SettingsItemLeft>
+          <SettingsItemRight>
+            <Picker
+              dropdownIconColor={activeTheme.PRIMARY_TEXT}
+              selectedValue={selectedShowResinTimerInDashboard}
+              onValueChange={(itemValue, itemIndex) => {
+                handleShowResinTimerInDashboard(itemValue);
               }}>
               <Picker.Item
                 style={{

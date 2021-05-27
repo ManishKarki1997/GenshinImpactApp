@@ -12,6 +12,7 @@ export const useSettingsDispatchContext = () =>
 const initialSettings = {
   characterPositionInHomePageMaterials: 'MODAL',
   showEvents: true,
+  showResinTimer: true,
   updateVersion: 1.2,
   newUpdateInfo: null,
 };
@@ -29,6 +30,12 @@ const settingsReducer = (state, action) => {
       return {
         ...state,
         showEvents: action.payload.showEvents,
+      };
+
+    case 'SET_SHOW_RESIN_TIMER':
+      return {
+        ...state,
+        showResinTimer: action.payload.showResinTimer,
       };
 
     case 'SET_NEW_UPDATE_INFO':

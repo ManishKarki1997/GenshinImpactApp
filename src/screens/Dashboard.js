@@ -80,10 +80,14 @@ const Dashboard = () => {
   React.useEffect(() => {
     setTodaysDay(weekDays[date.getDay()]);
 
-    async function handleCharacterPositionSetting() {
+    async function handleRestoreSettings() {
       const characterPositionInHomePageMaterials = await getItem(
         'characters-position-in-dashboard',
       );
+
+      const showEventsVal = await getItem('show-events');
+
+      const showResinTimerVal = await getItem('show-resin-timer-in-dashboard');
 
       settingsDispatch({
         type: 'SET_CHARACTER_POSITION_IN_HOME_PAGE_MATERIALS',
@@ -92,24 +96,27 @@ const Dashboard = () => {
             characterPositionInHomePageMaterials || 'MODAL',
         },
       });
-    }
 
-    handleCharacterPositionSetting();
-  }, [settingsDispatch]);
-
-  React.useEffect(() => {
-    async function handleSetShowEventsFromAsyncStorage() {
-      const showEventsVal = await getItem('show-events');
       settingsDispatch({
         type: 'SET_SHOW_EVENTS',
         payload: {
-          showEvents: Boolean(showEventsVal) || true,
+          showEvents: showEventsVal ? showEventsVal === 'true' : true,
+        },
+      });
+
+      settingsDispatch({
+        type: 'SET_SHOW_RESIN_TIMER',
+        payload: {
+          raw: showResinTimerVal ? showResinTimerVal === 'true' : true,
+          showResinTimer: showResinTimerVal
+            ? showResinTimerVal === 'true'
+            : true,
         },
       });
     }
 
-    handleSetShowEventsFromAsyncStorage();
-  }, []);
+    handleRestoreSettings();
+  }, [settingsDispatch]);
 
   React.useEffect(() => {
     if (!todaysDay) return;
@@ -139,7 +146,7 @@ const Dashboard = () => {
 
   return (
     <Container>
-      <ResinTimer />
+      {settingsValue.showResinTimer && <ResinTimer />}
 
       <View
         style={{
