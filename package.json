@@ -20,6 +20,7 @@
     "axios": "^0.21.1",
     "babel-plugin-module-resolver": "^3.2.0",
     "dotenv": "^8.6.0",
+    "moment": "^2.29.1",
     "react": "17.0.1",
     "react-dom": "16.13.1",
     "react-native": "0.64.1",

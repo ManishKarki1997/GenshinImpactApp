@@ -47,6 +47,8 @@ import CharacterIconListUI from '../components/UI/CharacterIconListUI';
 import WeaponIconListUI from '../components/UI/WeaponsIconListUI';
 import RenderEvents from '../components/UI/RenderEvents';
 
+import {ResinTimer} from '../components';
+
 const weekDays = [
   'Sunday',
   'Monday',
@@ -137,6 +139,8 @@ const Dashboard = () => {
 
   return (
     <Container>
+      <ResinTimer />
+
       <View
         style={{
           flexDirection: 'row',

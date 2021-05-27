@@ -12,7 +12,7 @@ export const useSettingsDispatchContext = () =>
 const initialSettings = {
   characterPositionInHomePageMaterials: 'MODAL',
   showEvents: true,
-  updateVersion: 1.1,
+  updateVersion: 1.2,
   newUpdateInfo: null,
 };
 

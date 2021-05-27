@@ -16,6 +16,10 @@ const initialData = {
   currentlyViewingWeapon: null,
   talentBooksToFarmForTheDay: null,
   weaponAscMatsToFarmForTheDay: null,
+  resinInfo: {
+    currentResin: 0,
+    lastSetResinTime: null,
+  },
 };
 
 const appReducer = (state, action) => {
@@ -60,6 +64,14 @@ const appReducer = (state, action) => {
         isLoading: false,
         talentBooksToFarmForTheDay: action.payload.talentBooks,
         weaponAscMatsToFarmForTheDay: action.payload.ascensionMaterials,
+      };
+
+    case 'SET_RESIN_INFO':
+      return {
+        ...state,
+        resinInfo: {
+          ...action.payload.resinInfo,
+        },
       };
 
     default:
