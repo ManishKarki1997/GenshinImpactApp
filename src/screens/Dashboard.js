@@ -79,44 +79,7 @@ const Dashboard = () => {
 
   React.useEffect(() => {
     setTodaysDay(weekDays[date.getDay()]);
-
-    async function handleRestoreSettings() {
-      const characterPositionInHomePageMaterials = await getItem(
-        'characters-position-in-dashboard',
-      );
-
-      const showEventsVal = await getItem('show-events');
-
-      const showResinTimerVal = await getItem('show-resin-timer-in-dashboard');
-
-      settingsDispatch({
-        type: 'SET_CHARACTER_POSITION_IN_HOME_PAGE_MATERIALS',
-        payload: {
-          characterPositionInHomePageMaterials:
-            characterPositionInHomePageMaterials || 'MODAL',
-        },
-      });
-
-      settingsDispatch({
-        type: 'SET_SHOW_EVENTS',
-        payload: {
-          showEvents: showEventsVal ? showEventsVal === 'true' : true,
-        },
-      });
-
-      settingsDispatch({
-        type: 'SET_SHOW_RESIN_TIMER',
-        payload: {
-          raw: showResinTimerVal ? showResinTimerVal === 'true' : true,
-          showResinTimer: showResinTimerVal
-            ? showResinTimerVal === 'true'
-            : true,
-        },
-      });
-    }
-
-    handleRestoreSettings();
-  }, [settingsDispatch]);
+  }, []);
 
   React.useEffect(() => {
     if (!todaysDay) return;
@@ -212,7 +175,8 @@ const Dashboard = () => {
                 flex: 1,
                 width: '100%',
                 height: '100%',
-              }}></TouchableOpacity>
+              }}
+            />
             <View
               style={{
                 position: 'absolute',
@@ -397,7 +361,7 @@ const Dashboard = () => {
         </FlexboxListWrapper>
       </SectionWrapper>
 
-      {settingsValue.showEvents && <RenderEvents />}
+      {settingsValue?.showEvents && <RenderEvents />}
     </Container>
   );
 };

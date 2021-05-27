@@ -1,4 +1,5 @@
 import React from 'react';
+import {getItem} from '../hooks/useAsyncStorage';
 
 const SettingsStateContext = React.createContext();
 const SettingsDispatchContext = React.createContext();
@@ -51,6 +52,45 @@ const settingsReducer = (state, action) => {
 
 export const SettingsProvider = ({children}) => {
   const [state, dispatch] = React.useReducer(settingsReducer, initialSettings);
+
+  React.useEffect(() => {
+    async function handleRestoreSettings() {
+      const characterPositionInHomePageMaterials = await getItem(
+        'characters-position-in-dashboard',
+      );
+
+      const showEventsVal = await getItem('show-events');
+
+      const showResinTimerVal = await getItem('show-resin-timer-in-dashboard');
+
+      dispatch({
+        type: 'SET_CHARACTER_POSITION_IN_HOME_PAGE_MATERIALS',
+        payload: {
+          characterPositionInHomePageMaterials:
+            characterPositionInHomePageMaterials || 'MODAL',
+        },
+      });
+
+      dispatch({
+        type: 'SET_SHOW_EVENTS',
+        payload: {
+          showEvents: showEventsVal ? showEventsVal === 'true' : true,
+        },
+      });
+
+      dispatch({
+        type: 'SET_SHOW_RESIN_TIMER',
+        payload: {
+          raw: showResinTimerVal ? showResinTimerVal === 'true' : true,
+          showResinTimer: showResinTimerVal
+            ? showResinTimerVal === 'true'
+            : true,
+        },
+      });
+    }
+
+    handleRestoreSettings();
+  }, []);
 
   return (
     <SettingsStateContext.Provider value={state}>

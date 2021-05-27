@@ -202,7 +202,7 @@ const ResinTimer = () => {
 };
 
 const Container = styled.View`
-  margin-bottom: 32px;
+  margin-bottom: 64px;
 `;
 
 const HeaderWrapper = styled.View`
