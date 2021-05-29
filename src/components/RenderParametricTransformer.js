@@ -17,15 +17,45 @@ import {getItem, setItem} from '../hooks/useAsyncStorage';
 import {Header} from './styles';
 
 const ParametricTransformer = () => {
+  const appDispatch = useAppDispatchContext();
+
+  const {lastSetParametricTransformer} = useAppStateContext();
+
   const [modalVisible, setModalVisible] = React.useState(false);
   const [lastUsedTransformerDateTime, setLastUsedTransformerDateTime] =
     React.useState(() => new Date());
   const [errorMessage, setErrorMessage] = React.useState('');
   const [replenishTime, setReplenishTime] = React.useState(0);
-  const [initialCurrentDate, setInitialCurrentDate] = React.useState(
-    () => new Date(),
-  );
   const timer = React.useRef();
+
+  // check if resin info is stored in async storage
+  React.useEffect(() => {
+    async function checkAsyncStorageForParametricTransformer() {
+      const lastSetParametricTransformerData = await getItem(
+        'genshin-app-parametric-transformer-time',
+        true,
+      );
+
+      if (!lastSetParametricTransformerData) {
+        appDispatch({
+          type: 'SET_PARAMETRIC_TRANSFORMER',
+          payload: {
+            lastSetParametricTransformer: new Date(),
+          },
+        });
+        return;
+      }
+
+      appDispatch({
+        type: 'SET_PARAMETRIC_TRANSFORMER',
+        payload: {
+          lastSetParametricTransformer: lastSetParametricTransformerData,
+        },
+      });
+    }
+
+    checkAsyncStorageForParametricTransformer();
+  }, []);
 
   const handleSetTimer = () => {
     const timeSetInFuture = moment().isBefore(lastUsedTransformerDateTime);
@@ -47,6 +77,18 @@ const ParametricTransformer = () => {
 
     setErrorMessage('');
 
+    appDispatch({
+      type: 'SET_PARAMETRIC_TRANSFORMER',
+      payload: {
+        lastSetParametricTransformer: lastUsedTransformerDateTime,
+      },
+    });
+    setItem(
+      'genshin-app-parametric-transformer-time',
+      lastUsedTransformerDateTime.toString(),
+      true,
+    );
+
     setModalVisible(false);
   };
 
@@ -56,7 +98,7 @@ const ParametricTransformer = () => {
     const currentDateTime = new Date();
 
     const elapsedHours = moment
-      .duration(moment().diff(lastUsedTransformerDateTime))
+      .duration(moment().diff(lastSetParametricTransformer))
       .asHours();
 
     const remainingMins = (166 - elapsedHours) * 60;
@@ -96,7 +138,11 @@ const ParametricTransformer = () => {
       setReplenishTime(calculateTimeLeft());
     }, 1000);
     return () => clearInterval(timer.current);
-  }, [lastUsedTransformerDateTime, replenishTime]);
+  }, [
+    lastUsedTransformerDateTime,
+    lastSetParametricTransformer,
+    replenishTime,
+  ]);
 
   return (
     <Container>

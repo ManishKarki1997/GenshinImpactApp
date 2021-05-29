@@ -20,6 +20,7 @@ const initialData = {
     currentResin: 0,
     lastSetResinTime: null,
   },
+  lastSetParametricTransformer: null,
 };
 
 const appReducer = (state, action) => {
@@ -72,6 +73,14 @@ const appReducer = (state, action) => {
         resinInfo: {
           ...action.payload.resinInfo,
         },
+      };
+
+    case 'SET_PARAMETRIC_TRANSFORMER':
+      console.log(action.payload.lastSetParametricTransformer);
+      return {
+        ...state,
+        lastSetParametricTransformer:
+          action.payload.lastSetParametricTransformer,
       };
 
     default:
