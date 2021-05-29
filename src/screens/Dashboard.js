@@ -47,7 +47,7 @@ import CharacterIconListUI from '../components/UI/CharacterIconListUI';
 import WeaponIconListUI from '../components/UI/WeaponsIconListUI';
 import RenderEvents from '../components/UI/RenderEvents';
 
-import {ResinTimer} from '../components';
+import {ResinTimer, ParametricTransformer} from '../components';
 
 const weekDays = [
   'Sunday',
@@ -110,6 +110,8 @@ const Dashboard = () => {
   return (
     <Container>
       {settingsValue.showResinTimer && <ResinTimer />}
+
+      <ParametricTransformer />
 
       <View
         style={{

@@ -6,6 +6,7 @@ import moment from 'moment';
 import {Body, Heading2, Heading3, Small, SubtitleItalic} from './Typography';
 import {useAppDispatchContext, useAppStateContext} from '../contexts';
 import {getItem, setItem} from '../hooks/useAsyncStorage';
+import {Header} from './styles';
 
 const ResinTimer = () => {
   const appDispatch = useAppDispatchContext();
@@ -129,7 +130,9 @@ const ResinTimer = () => {
   return (
     <Container>
       <HeaderWrapper>
-        <Heading3>Resin Timer</Heading3>
+        <Header>
+          <Body>Resin Timer</Body>
+        </Header>
 
         <ResinOverview onPress={() => setModalVisible(true)}>
           <Image
@@ -216,6 +219,9 @@ const HeaderWrapper = styled.View`
 const ResinTimerWrapper = styled.View`
   justify-content: center;
   align-items: center;
+  background-color: ${props => props.theme.SECONDARY_BACKGROUND};
+  padding: 8px 12px;
+  border-radius: 5px;
 `;
 
 const ResinTimerItem = styled.View`
