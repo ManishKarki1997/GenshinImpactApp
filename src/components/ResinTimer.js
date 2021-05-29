@@ -3,7 +3,14 @@ import {Image, View, Modal} from 'react-native';
 import styled from 'styled-components/native';
 import moment from 'moment';
 
-import {Body, Heading2, Heading3, Small, SubtitleItalic} from './Typography';
+import {
+  Body,
+  Heading2,
+  Heading3,
+  Small,
+  SubtitleItalic,
+  VerySmall,
+} from './Typography';
 import {useAppDispatchContext, useAppStateContext} from '../contexts';
 import {getItem, setItem} from '../hooks/useAsyncStorage';
 import {Header} from './styles';
@@ -17,12 +24,12 @@ const ResinTimer = () => {
   const [modalVisible, setModalVisible] = React.useState(false);
   const [tempResin, setTempResin] = React.useState(0);
   const [errorMessage, setErrorMessage] = React.useState('');
-  //   const [resinSetTime, setResinSetTime] = React.useState(1622111376411);
   const [replenishTime, setReplenishTime] = React.useState(0);
   const [totalTimeElapsed, setTotalTimeElapsed] = React.useState(0);
-  const [currentDateTime, setCurrentDateTime] = React.useState(
+  const [initialCurrentDate, setInitialCurrentDate] = React.useState(
     () => new Date(),
   );
+  const timer = React.useRef();
 
   const handleSetResin = num => {
     if (isNaN(num.trim())) {
@@ -64,7 +71,10 @@ const ResinTimer = () => {
     const remainingResinToRefill = 160 - currentResin;
     const remainingMinsUntilFullResin = remainingResinToRefill * 8;
 
-    const timeTillFull = moment(new Date())
+    const currentDateTime = new Date();
+
+    // x = milliseconds
+    const timeTillFull = moment(lastSetResinTime || initialCurrentDate)
       .add(remainingMinsUntilFullResin, 'minutes')
       .format('x');
 
@@ -89,12 +99,12 @@ const ResinTimer = () => {
   };
 
   React.useEffect(() => {
-    const timer = setTimeout(() => {
+    timer.current = setInterval(() => {
       setTotalTimeElapsed(prev => prev + 1);
       setReplenishTime(calculateTimeLeft());
     }, 1000);
 
-    return () => clearTimeout(timer);
+    return () => clearInterval(timer.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentResin, lastSetResinTime, replenishTime]);
 
@@ -130,8 +140,9 @@ const ResinTimer = () => {
   return (
     <Container>
       <HeaderWrapper>
-        <Header>
-          <Body>Resin Timer</Body>
+        <Header style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Body style={{color: 'white'}}>Resin Timer</Body>
+          <VerySmall style={{marginLeft: 8}}>(Beta)</VerySmall>
         </Header>
 
         <ResinOverview onPress={() => setModalVisible(true)}>
@@ -181,7 +192,7 @@ const ResinTimer = () => {
 
           <ModalContentWrapper>
             <View style={{alignItems: 'center'}}>
-              <Heading2>Set current resin</Heading2>
+              <Heading2 style={{color: 'white'}}>Set current resin</Heading2>
               <SubtitleItalic>( Max 160 )</SubtitleItalic>
               <View>
                 <ResinInputTextBox
@@ -256,6 +267,7 @@ const ClickableModalBg = styled.TouchableOpacity`
 
 const ResinInputTextBox = styled.TextInput`
   background-color: ${props => props.theme.PRIMARY_BACKGROUND};
+  color: ${props => props.theme.PRIMARY_TEXT};
   padding: 8px 12px;
   border-radius: 5px;
   margin-top: 8px;

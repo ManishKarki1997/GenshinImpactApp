@@ -2,26 +2,108 @@ import React from 'react';
 import {Image, View, Modal} from 'react-native';
 import styled from 'styled-components/native';
 import moment from 'moment';
+import DatePicker from 'react-native-date-picker';
 
-import {Body, Heading2, Heading3, Small, SubtitleItalic} from './Typography';
+import {
+  Body,
+  Heading2,
+  Heading3,
+  Small,
+  SubtitleItalic,
+  VerySmall,
+} from './Typography';
 import {useAppDispatchContext, useAppStateContext} from '../contexts';
 import {getItem, setItem} from '../hooks/useAsyncStorage';
 import {Header} from './styles';
 
 const ParametricTransformer = () => {
   const [modalVisible, setModalVisible] = React.useState(false);
-  const [tempResin, setTempResin] = React.useState(0);
+  const [lastUsedTransformerDateTime, setLastUsedTransformerDateTime] =
+    React.useState(() => new Date());
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [replenishTime, setReplenishTime] = React.useState(0);
+  const [initialCurrentDate, setInitialCurrentDate] = React.useState(
+    () => new Date(),
+  );
+  const timer = React.useRef();
 
-  const handleSetTimer = () => {};
+  const handleSetTimer = () => {
+    const timeSetInFuture = moment().isBefore(lastUsedTransformerDateTime);
 
-  const handleAfterEnteringTimer = () => {};
+    const timeSetBefore6Days = moment
+      .duration(moment().diff(lastUsedTransformerDateTime))
+      .asHours();
+
+    // 166 = 6 days 22 hrs, the reset time for parametric transformer
+    if (timeSetBefore6Days > 0 && timeSetBefore6Days > 166) {
+      setErrorMessage('Time cannot be 6 days and 22 hours before.');
+      return;
+    }
+
+    if (timeSetInFuture) {
+      setErrorMessage('Time cannot be set in the future');
+      return;
+    }
+
+    setErrorMessage('');
+
+    setModalVisible(false);
+  };
+
+  const calculateTimeLeft = () => {
+    let timeLeft = [];
+
+    const currentDateTime = new Date();
+
+    const elapsedHours = moment
+      .duration(moment().diff(lastUsedTransformerDateTime))
+      .asHours();
+
+    const remainingMins = (166 - elapsedHours) * 60;
+
+    // x = milliseconds
+    const timeTillFull = moment(currentDateTime)
+      .add(remainingMins, 'minutes')
+      .format('x');
+
+    const diff = parseInt(timeTillFull) - currentDateTime;
+
+    if (diff > 0) {
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24)).toString();
+
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
+        .toString()
+        .padStart(2, '0');
+
+      const minutes = Math.floor((diff / 1000 / 60) % 60)
+        .toString()
+        .padStart(2, '0');
+
+      const seconds = Math.floor((diff / 1000) % 60)
+        .toString()
+        .padStart(2, '0');
+
+      timeLeft = [days, hours, minutes, seconds];
+    }
+    return timeLeft;
+  };
+
+  //   Bug : skips a second,
+  // resin timer works properly, but not this timer
+
+  React.useEffect(() => {
+    timer.current = setInterval(() => {
+      setReplenishTime(calculateTimeLeft());
+    }, 1000);
+    return () => clearInterval(timer.current);
+  }, [lastUsedTransformerDateTime, replenishTime]);
 
   return (
     <Container>
       <HeaderWrapper>
-        <Header>
-          <Body>Parametric Transformer</Body>
+        <Header style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Body style={{color: 'white'}}>Parametric Transformer</Body>
+          <VerySmall style={{marginLeft: 8}}>(Beta)</VerySmall>
         </Header>
         <TransformerOverview onPress={() => setModalVisible(true)}>
           <Image
@@ -36,7 +118,11 @@ const ParametricTransformer = () => {
       <TransformerWrapper>
         <TransformerItem>
           <Small>Reusable in about</Small>
-          <Heading3>5 days, 3 hours, 5 seconds</Heading3>
+          <Heading3>
+            {!replenishTime || replenishTime.length == 0
+              ? 'x days, y hrs, z mins, 0 s'
+              : `${replenishTime[0]} days, ${replenishTime[1]} hrs, ${replenishTime[2]} mins, ${replenishTime[3]}s`}
+          </Heading3>
         </TransformerItem>
       </TransformerWrapper>
 
@@ -44,28 +130,23 @@ const ParametricTransformer = () => {
         <ModalBackground>
           <ClickableModalBg
             onPress={() => {
-              setErrorMessage('');
-              setModalVisible(false);
+              handleSetTimer();
             }}
           />
 
           <ModalContentWrapper>
             <View style={{alignItems: 'center'}}>
-              <Heading2>Last used time</Heading2>
+              <Heading2 style={{color: 'white'}}>Last used time</Heading2>
               <SubtitleItalic>
                 The last time you used the Parametric Transformer
               </SubtitleItalic>
-              <View>
-                <ResinInputTextBox
-                  onChangeText={handleSetTimer}
-                  onEndEditing={handleAfterEnteringTimer}
-                  placeholder="Enter your current resin"
-                  keyboardType="numeric"
-                  maxLength={3}
-                  style={{
-                    borderColor: errorMessage ? 'red' : 'transparent',
-                    borderWidth: errorMessage ? 1 : 0,
-                  }}
+              <View style={{marginTop: 20}}>
+                <DatePicker
+                  date={lastUsedTransformerDateTime}
+                  onDateChange={setLastUsedTransformerDateTime}
+                  mode="datetime"
+                  textColor="white"
+                  fadeToColor="rgba(22, 35, 52, 0.9)"
                 />
               </View>
               <Small style={{color: 'red'}}>{errorMessage}</Small>
