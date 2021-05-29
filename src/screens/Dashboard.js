@@ -8,8 +8,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import PushNotification from 'react-native-push-notification';
 
 import {
   Body,
@@ -111,7 +111,7 @@ const Dashboard = () => {
     <Container>
       {settingsValue.showResinTimer && <ResinTimer />}
 
-      <ParametricTransformer />
+      {settingsValue.showParametricTransformer && <ParametricTransformer />}
 
       <View
         style={{

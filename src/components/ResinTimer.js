@@ -11,15 +11,22 @@ import {
   SubtitleItalic,
   VerySmall,
 } from './Typography';
-import {useAppDispatchContext, useAppStateContext} from '../contexts';
+import {
+  useAppDispatchContext,
+  useAppStateContext,
+  useSettingsStateContext,
+} from '../contexts';
 import {getItem, setItem} from '../hooks/useAsyncStorage';
 import {Header} from './styles';
+import {cancelNotification, scheduleNotification} from '../helpers';
+import {NotificationIds} from '../constants';
 
 const ResinTimer = () => {
   const appDispatch = useAppDispatchContext();
   const appState = useAppStateContext();
 
   const {currentResin, lastSetResinTime} = appState.resinInfo;
+  const {slackTimeInMinsForTimer} = useSettingsStateContext();
 
   const [modalVisible, setModalVisible] = React.useState(false);
   const [tempResin, setTempResin] = React.useState(0);
@@ -64,6 +71,20 @@ const ResinTimer = () => {
     });
 
     setItem('genshin-app-resin-info', resinInfo);
+
+    const remainingResinToRefill = 160 - tempResin;
+    const remainingHours = (remainingResinToRefill * 8) / 60;
+    cancelNotification(NotificationIds.RESIN_NOTIFICATION_ID);
+
+    scheduleNotification({
+      id: NotificationIds.RESIN_NOTIFICATION_ID,
+      title: 'Resin Replenished',
+      message: 'Your resin has been fully replenished.',
+      date:
+        remainingResinToRefill * 8 <= slackTimeInMinsForTimer
+          ? new Date(Date.now() + 3000)
+          : new Date(Date.now() + remainingHours * 60 * 60 * 1000),
+    });
   };
 
   const calculateTimeLeft = () => {
@@ -74,7 +95,7 @@ const ResinTimer = () => {
     const currentDateTime = new Date();
 
     // x = milliseconds
-    const timeTillFull = moment(lastSetResinTime || initialCurrentDate)
+    const timeTillFull = moment(lastSetResinTime || currentDateTime)
       .add(remainingMinsUntilFullResin, 'minutes')
       .format('x');
 

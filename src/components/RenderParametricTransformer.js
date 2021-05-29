@@ -12,12 +12,21 @@ import {
   SubtitleItalic,
   VerySmall,
 } from './Typography';
-import {useAppDispatchContext, useAppStateContext} from '../contexts';
+import {
+  useAppDispatchContext,
+  useAppStateContext,
+  useSettingsStateContext,
+} from '../contexts';
 import {getItem, setItem} from '../hooks/useAsyncStorage';
 import {Header} from './styles';
 
+import {scheduleNotification, cancelNotification} from '../helpers';
+import {NotificationIds} from '../constants';
+
 const ParametricTransformer = () => {
   const appDispatch = useAppDispatchContext();
+
+  const {slackTimeInMinsForTimer} = useSettingsStateContext();
 
   const {lastSetParametricTransformer} = useAppStateContext();
 
@@ -49,7 +58,9 @@ const ParametricTransformer = () => {
       appDispatch({
         type: 'SET_PARAMETRIC_TRANSFORMER',
         payload: {
-          lastSetParametricTransformer: lastSetParametricTransformerData,
+          lastSetParametricTransformer: new Date(
+            lastSetParametricTransformerData,
+          ),
         },
       });
     }
@@ -83,11 +94,33 @@ const ParametricTransformer = () => {
         lastSetParametricTransformer: lastUsedTransformerDateTime,
       },
     });
+
     setItem(
       'genshin-app-parametric-transformer-time',
       lastUsedTransformerDateTime.toString(),
       true,
     );
+
+    cancelNotification(NotificationIds.TRANSFORMER_NOTIFICATION_ID);
+
+    const elapsedHours = moment
+      .duration(moment().diff(lastSetParametricTransformer))
+      .asHours();
+
+    const remainingHours = 166 - elapsedHours;
+    const remainingMins = Math.round(remainingHours * 60);
+
+    console.log({remainingMins, slackTimeInMinsForTimer});
+
+    scheduleNotification({
+      id: NotificationIds.TRANSFORMER_NOTIFICATION_ID,
+      title: 'Parametric Transformer',
+      message: 'You can probably use your Parametric Transformer now.',
+      date:
+        remainingMins <= slackTimeInMinsForTimer
+          ? new Date(Date.now() + 3 * 1000)
+          : new Date(Date.now() + remainingHours * 60 * 60 * 1000),
+    });
 
     setModalVisible(false);
   };

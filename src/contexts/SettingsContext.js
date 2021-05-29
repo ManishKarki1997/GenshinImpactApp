@@ -14,6 +14,8 @@ const initialSettings = {
   characterPositionInHomePageMaterials: 'MODAL',
   showEvents: true,
   showResinTimer: true,
+  showParametricTransformer: true,
+  slackTimeInMinsForTimer: 10,
   updateVersion: 1.2,
   newUpdateInfo: null,
 };
@@ -37,6 +39,18 @@ const settingsReducer = (state, action) => {
       return {
         ...state,
         showResinTimer: action.payload.showResinTimer,
+      };
+
+    case 'SET_SHOW_PARAMETRIC_TIMER':
+      return {
+        ...state,
+        showParametricTransformer: action.payload.showParametricTransformer,
+      };
+
+    case 'SET_SLACK_TIME_FOR_TIMER':
+      return {
+        ...state,
+        slackTimeInMinsForTimer: action.payload.slackTimeInMinsForTimer,
       };
 
     case 'SET_NEW_UPDATE_INFO':
@@ -63,6 +77,12 @@ export const SettingsProvider = ({children}) => {
 
       const showResinTimerVal = await getItem('show-resin-timer-in-dashboard');
 
+      const showParametricTimerVal = await getItem(
+        'show-parametric-timer-in-dashboard',
+      );
+
+      const slackTimeForTimerVal = await getItem('genshin-notification-slack');
+
       dispatch({
         type: 'SET_CHARACTER_POSITION_IN_HOME_PAGE_MATERIALS',
         payload: {
@@ -79,12 +99,29 @@ export const SettingsProvider = ({children}) => {
       });
 
       dispatch({
+        type: 'SET_SHOW_PARAMETRIC_TIMER',
+        payload: {
+          showParametricTransformer: showParametricTimerVal
+            ? showParametricTimerVal === 'true'
+            : true,
+        },
+      });
+
+      dispatch({
         type: 'SET_SHOW_RESIN_TIMER',
         payload: {
-          raw: showResinTimerVal ? showResinTimerVal === 'true' : true,
           showResinTimer: showResinTimerVal
             ? showResinTimerVal === 'true'
             : true,
+        },
+      });
+
+      dispatch({
+        type: 'SET_SLACK_TIME_FOR_TIMER',
+        payload: {
+          slackTimeInMinsForTimer: slackTimeForTimerVal
+            ? parseInt(slackTimeForTimerVal)
+            : 10,
         },
       });
     }

@@ -76,7 +76,6 @@ const appReducer = (state, action) => {
       };
 
     case 'SET_PARAMETRIC_TRANSFORMER':
-      console.log(action.payload.lastSetParametricTransformer);
       return {
         ...state,
         lastSetParametricTransformer:

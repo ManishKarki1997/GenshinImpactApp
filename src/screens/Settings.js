@@ -46,6 +46,13 @@ const Settings = () => {
   const [selectedShowEventsInDashboard, setSelectedShowEventsInDashboard] =
     React.useState(true);
 
+  const [timerSlack, setTimerSlack] = React.useState(10);
+
+  const [
+    selectedShowTransformerTimerInDashboard,
+    setSelectedShowTransformerTimerInDashboard,
+  ] = React.useState(true);
+
   const [
     selectedShowResinTimerInDashboard,
     setSelectedShowResinTimerInDashboard,
@@ -87,12 +94,47 @@ const Settings = () => {
     });
   };
 
+  const handleShowParametricTransformerInDashboard = async val => {
+    setSelectedShowTransformerTimerInDashboard(val);
+    await AsyncStorage.setItem(
+      'show-parametric-timer-in-dashboard',
+      val.toString(),
+    );
+
+    settingsDispatch({
+      type: 'SET_SHOW_PARAMETRIC_TIMER',
+      payload: {
+        showParametricTransformer: val,
+      },
+    });
+  };
+
+  const handleTimerSlack = async val => {
+    setSelectedShowTransformerTimerInDashboard(val);
+    await AsyncStorage.setItem('genshin-notification-slack', val.toString());
+
+    settingsDispatch({
+      type: 'SET_SLACK_TIME_FOR_TIMER',
+      payload: {
+        slackTimeForTimer: val,
+      },
+    });
+  };
+
   React.useEffect(() => {
     setSelectedShowEventsInDashboard(settingsValue.showEvents);
     setSelectedShowResinTimerInDashboard(settingsValue.showResinTimer);
     setSelectedCharacterPosition(
       settingsValue.characterPositionInHomePageMaterials,
     );
+    setSelectedShowTransformerTimerInDashboard(
+      settingsValue.showParametricTransformer,
+    );
+    console.log(
+      settingsValue.slackTimeInMinsForTimer,
+      typeof settingsValue.slackTimeInMinsForTimer,
+    );
+    setTimerSlack(settingsValue.slackTimeInMinsForTimer);
   }, [settingsValue]);
 
   return (
@@ -180,6 +222,80 @@ const Settings = () => {
                 }}
                 label="Hide"
                 value={false}
+              />
+            </Picker>
+          </SettingsItemRight>
+        </SettingsItem>
+
+        <SettingsItem>
+          <SettingsItemLeft>
+            <Small>
+              Show/Hide Parametric Transformer timer from the dashboard
+            </Small>
+          </SettingsItemLeft>
+          <SettingsItemRight>
+            <Picker
+              dropdownIconColor={activeTheme.PRIMARY_TEXT}
+              selectedValue={selectedShowTransformerTimerInDashboard}
+              onValueChange={(itemValue, itemIndex) => {
+                handleShowParametricTransformerInDashboard(itemValue);
+              }}>
+              <Picker.Item
+                style={{
+                  color: activeTheme.PRIMARY_TEXT,
+                }}
+                label="Show"
+                value={true}
+              />
+              <Picker.Item
+                style={{
+                  color: activeTheme.PRIMARY_TEXT,
+                }}
+                label="Hide"
+                value={false}
+              />
+            </Picker>
+          </SettingsItemRight>
+        </SettingsItem>
+
+        <SettingsItem>
+          <SettingsItemLeft>
+            <Small>Show notification X minutes early</Small>
+          </SettingsItemLeft>
+          <SettingsItemRight>
+            <Picker
+              dropdownIconColor={activeTheme.PRIMARY_TEXT}
+              selectedValue={timerSlack}
+              onValueChange={(itemValue, itemIndex) => {
+                handleTimerSlack(itemValue);
+              }}>
+              <Picker.Item
+                style={{
+                  color: activeTheme.PRIMARY_TEXT,
+                }}
+                label="Instant"
+                value={0}
+              />
+              <Picker.Item
+                style={{
+                  color: activeTheme.PRIMARY_TEXT,
+                }}
+                label="5 Minutes"
+                value={5}
+              />
+              <Picker.Item
+                style={{
+                  color: activeTheme.PRIMARY_TEXT,
+                }}
+                label="10 Minutes"
+                value={10}
+              />
+              <Picker.Item
+                style={{
+                  color: activeTheme.PRIMARY_TEXT,
+                }}
+                label="20 Minutes"
+                value={20}
               />
             </Picker>
           </SettingsItemRight>
