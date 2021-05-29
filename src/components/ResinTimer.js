@@ -19,6 +19,9 @@ const ResinTimer = () => {
   //   const [resinSetTime, setResinSetTime] = React.useState(1622111376411);
   const [replenishTime, setReplenishTime] = React.useState(0);
   const [totalTimeElapsed, setTotalTimeElapsed] = React.useState(0);
+  const [currentDateTime, setCurrentDateTime] = React.useState(
+    () => new Date(),
+  );
 
   const handleSetResin = num => {
     if (isNaN(num.trim())) {
@@ -56,17 +59,15 @@ const ResinTimer = () => {
   };
 
   const calculateTimeLeft = () => {
-    // console.log('calculating time...', {lastSetResinTime});
     let timeLeft = [];
     const remainingResinToRefill = 160 - currentResin;
     const remainingMinsUntilFullResin = remainingResinToRefill * 8;
 
-    const currentTime = Date.now();
-    const timeTillFull = moment(new Date(lastSetResinTime))
+    const timeTillFull = moment(new Date())
       .add(remainingMinsUntilFullResin, 'minutes')
       .format('x');
 
-    const diff = parseInt(timeTillFull) - currentTime;
+    const diff = parseInt(timeTillFull) - currentDateTime;
 
     if (diff > 0) {
       const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
@@ -83,7 +84,6 @@ const ResinTimer = () => {
 
       timeLeft = [hours, minutes, seconds];
     }
-
     return timeLeft;
   };
 
@@ -160,7 +160,7 @@ const ResinTimer = () => {
         <ResinTimerItem>
           <Small>Fully Replenish in </Small>
           <Heading2>
-            {!replenishTime || replenishTime.length === '0'
+            {!replenishTime || replenishTime.length == 0
               ? '00:00:00'
               : `${replenishTime[0]}:${replenishTime[1]}:${replenishTime[2]}`}
           </Heading2>
@@ -173,7 +173,8 @@ const ResinTimer = () => {
             onPress={() => {
               setErrorMessage('');
               setModalVisible(false);
-            }}></ClickableModalBg>
+            }}
+          />
 
           <ModalContentWrapper>
             <View style={{alignItems: 'center'}}>
