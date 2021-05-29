@@ -1,4 +1,5 @@
 import React from 'react';
+import {AsyncStorageKeys} from '../constants';
 import {getItem} from '../hooks/useAsyncStorage';
 
 const SettingsStateContext = React.createContext();
@@ -70,18 +71,24 @@ export const SettingsProvider = ({children}) => {
   React.useEffect(() => {
     async function handleRestoreSettings() {
       const characterPositionInHomePageMaterials = await getItem(
-        'characters-position-in-dashboard',
+        AsyncStorageKeys.MATERIALS_POSITION_IN_DASHBOARD,
       );
 
-      const showEventsVal = await getItem('show-events');
+      const showEventsVal = await getItem(
+        AsyncStorageKeys.SHOW_EVENTS_SETTING_KEY,
+      );
 
-      const showResinTimerVal = await getItem('show-resin-timer-in-dashboard');
+      const showResinTimerVal = await getItem(
+        AsyncStorageKeys.SHOW_RESIN_TIMER_SETTING_KEY,
+      );
 
       const showParametricTimerVal = await getItem(
-        'show-parametric-timer-in-dashboard',
+        AsyncStorageKeys.SHOW_TRANSFORMER_TIMER_SETTING_KEY,
       );
 
-      const slackTimeForTimerVal = await getItem('genshin-notification-slack');
+      const slackTimeForTimerVal = await getItem(
+        AsyncStorageKeys.NOTIFICATIONS_SLACK_TIME_IN_MINS,
+      );
 
       dispatch({
         type: 'SET_CHARACTER_POSITION_IN_HOME_PAGE_MATERIALS',

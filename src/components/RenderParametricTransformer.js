@@ -110,8 +110,6 @@ const ParametricTransformer = () => {
     const remainingHours = 166 - elapsedHours;
     const remainingMins = Math.round(remainingHours * 60);
 
-    console.log({remainingMins, slackTimeInMinsForTimer});
-
     scheduleNotification({
       id: NotificationIds.TRANSFORMER_NOTIFICATION_ID,
       title: 'Parametric Transformer',

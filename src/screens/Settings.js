@@ -18,7 +18,7 @@ import {
   useSettingsDispatchContext,
   useSettingsStateContext,
 } from '../contexts';
-import {DarkTheme, LightTheme} from '../constants';
+import {AsyncStorageKeys, DarkTheme, LightTheme} from '../constants';
 
 const materialsPositionOptions = [
   {
@@ -60,7 +60,10 @@ const Settings = () => {
 
   const handleCharacterPositionSettings = async val => {
     setSelectedCharacterPosition(val);
-    await AsyncStorage.setItem('characters-position-in-dashboard', val);
+    await AsyncStorage.setItem(
+      AsyncStorageKeys.MATERIALS_POSITION_IN_DASHBOARD,
+      val,
+    );
 
     settingsDispatch({
       type: 'SET_CHARACTER_POSITION_IN_HOME_PAGE_MATERIALS',
@@ -72,7 +75,10 @@ const Settings = () => {
 
   const handleShowEventsInDashboard = async val => {
     setSelectedShowEventsInDashboard(val);
-    await AsyncStorage.setItem('show-events', val.toString());
+    await AsyncStorage.setItem(
+      AsyncStorageKeys.SHOW_EVENTS_SETTING_KEY,
+      val.toString(),
+    );
 
     settingsDispatch({
       type: 'SET_SHOW_EVENTS',
@@ -84,7 +90,10 @@ const Settings = () => {
 
   const handleShowResinTimerInDashboard = async val => {
     setSelectedShowResinTimerInDashboard(val);
-    await AsyncStorage.setItem('show-resin-timer-in-dashboard', val.toString());
+    await AsyncStorage.setItem(
+      AsyncStorageKeys.SHOW_RESIN_TIMER_SETTING_KEY,
+      val.toString(),
+    );
 
     settingsDispatch({
       type: 'SET_SHOW_RESIN_TIMER',
@@ -97,7 +106,7 @@ const Settings = () => {
   const handleShowParametricTransformerInDashboard = async val => {
     setSelectedShowTransformerTimerInDashboard(val);
     await AsyncStorage.setItem(
-      'show-parametric-timer-in-dashboard',
+      AsyncStorageKeys.SHOW_TRANSFORMER_TIMER_SETTING_KEY,
       val.toString(),
     );
 
@@ -111,7 +120,10 @@ const Settings = () => {
 
   const handleTimerSlack = async val => {
     setSelectedShowTransformerTimerInDashboard(val);
-    await AsyncStorage.setItem('genshin-notification-slack', val.toString());
+    await AsyncStorage.setItem(
+      AsyncStorageKeys.NOTIFICATIONS_SLACK_TIME_IN_MINS,
+      val.toString(),
+    );
 
     settingsDispatch({
       type: 'SET_SLACK_TIME_FOR_TIMER',

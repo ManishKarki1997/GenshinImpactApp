@@ -1,5 +1,6 @@
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {AsyncStorageKeys} from '../constants';
 
 export const ThemeContext = React.createContext('dark');
 
@@ -14,13 +15,15 @@ const ThemeProvider = ({children, ...rest}) => {
     } else {
       const newTheme = theme === 'light' ? 'dark' : 'light';
       setTheme(newTheme);
-      await AsyncStorage.setItem('genshin-app-theme', newTheme);
+      await AsyncStorage.setItem(AsyncStorageKeys.APP_THEME, newTheme);
     }
   };
 
   React.useEffect(() => {
     async function getTheme() {
-      const storedTheme = await AsyncStorage.getItem('genshin-app-theme');
+      const storedTheme = await AsyncStorage.getItem(
+        AsyncStorageKeys.APP_THEME,
+      );
       if (storedTheme) {
         setTheme(storedTheme);
       }
