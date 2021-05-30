@@ -161,9 +161,6 @@ const ParametricTransformer = () => {
     return timeLeft;
   };
 
-  //   Bug : skips a second,
-  // resin timer works properly, but not this timer
-
   React.useEffect(() => {
     timer.current = setInterval(() => {
       setReplenishTime(calculateTimeLeft());

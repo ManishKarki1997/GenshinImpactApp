@@ -33,9 +33,8 @@ const ResinTimer = () => {
   const [errorMessage, setErrorMessage] = React.useState('');
   const [replenishTime, setReplenishTime] = React.useState(0);
   const [totalTimeElapsed, setTotalTimeElapsed] = React.useState(0);
-  const [initialCurrentDate, setInitialCurrentDate] = React.useState(
-    () => new Date(),
-  );
+  const [isResinReplenished, setIsResinReplenished] = React.useState(false);
+
   const timer = React.useRef();
 
   const handleSetResin = num => {
@@ -100,7 +99,6 @@ const ResinTimer = () => {
       .format('x');
 
     const diff = parseInt(timeTillFull) - currentDateTime;
-
     if (diff > 0) {
       const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
         .toString()
@@ -115,6 +113,20 @@ const ResinTimer = () => {
         .padStart(2, '0');
 
       timeLeft = [hours, minutes, seconds];
+    } else {
+      setIsResinReplenished(true);
+
+      const resinInfo = {
+        currentResin: 160,
+        lastSetResinTime,
+      };
+
+      appDispatch({
+        type: 'SET_RESIN_INFO',
+        payload: {
+          resinInfo,
+        },
+      });
     }
     return timeLeft;
   };
@@ -133,7 +145,6 @@ const ResinTimer = () => {
   React.useEffect(() => {
     async function checkAsyncStorageForResinInfo() {
       const resinInfo = await getItem('genshin-app-resin-info');
-
       if (!resinInfo) {
         appDispatch({
           type: 'SET_RESIN_INFO',
@@ -195,7 +206,9 @@ const ResinTimer = () => {
         <ResinTimerItem>
           <Small>Fully Replenish in </Small>
           <Heading2>
-            {!replenishTime || replenishTime.length == 0
+            {isResinReplenished
+              ? 'Resin Replenished'
+              : replenishTime.length == 0
               ? '00:00:00'
               : `${replenishTime[0]}:${replenishTime[1]}:${replenishTime[2]}`}
           </Heading2>
