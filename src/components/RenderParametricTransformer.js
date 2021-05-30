@@ -39,6 +39,8 @@ const ParametricTransformer = () => {
   const [replenishTime, setReplenishTime] = React.useState(0);
   const timer = React.useRef();
 
+  const [isReusable, setIsReusable] = React.useState(false);
+
   const [remainingDays, setRemainingDays] = React.useState(0);
   const [remainingHours, setRemainingHours] = React.useState(0);
   const [remainingMinutes, setRemainingMinutes] = React.useState(0);
@@ -132,6 +134,11 @@ const ParametricTransformer = () => {
 
     const diff = moment(dateTimeTillReset - moment(currentDateTime));
 
+    if (diff < 0) {
+      setIsReusable(true);
+      return timeLeft;
+    }
+
     const days = Math.floor(diff / (1000 * 60 * 60 * 24)).toString();
 
     const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
@@ -183,7 +190,9 @@ const ParametricTransformer = () => {
         <TransformerItem>
           <Small>Reusable in about</Small>
           <Heading3>
-            {!replenishTime || replenishTime.length == 0
+            {isReusable
+              ? 'Now'
+              : !replenishTime || replenishTime.length == 0
               ? '0 days, 0 hrs, 0 mins, 0s'
               : `${replenishTime[0]} days, ${replenishTime[1]} hrs, ${replenishTime[2]} mins, ${replenishTime[3]}s`}
           </Heading3>
