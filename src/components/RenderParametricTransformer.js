@@ -81,6 +81,8 @@ const ParametricTransformer = () => {
       lastSetDate: Date.now(),
     };
 
+    console.log(parametricTransformerTime);
+
     appDispatch({
       type: 'SET_PARAMETRIC_TRANSFORMER_TIME',
       payload: {
@@ -92,7 +94,7 @@ const ParametricTransformer = () => {
       parametricTransformerTime,
     );
 
-    // cancelNotification(NotificationIds.TRANSFORMER_NOTIFICATION_ID);
+    cancelNotification(NotificationIds.TRANSFORMER_NOTIFICATION_ID);
 
     const resetDateTime = moment()
       .add(remainingDays, 'days')
@@ -110,7 +112,11 @@ const ParametricTransformer = () => {
     scheduleNotification({
       id: NotificationIds.TRANSFORMER_NOTIFICATION_ID,
       title: 'Parametric Transformer',
-      message: 'You can probably use your Parametric Transformer now.',
+      message: `You can probably use your Parametric Transformer ${
+        slackTimeInMinsForTimer == 0
+          ? 'now'
+          : 'in about ' + slackTimeInMinsForTimer + ' minutes'
+      }.`,
       date: notificationScheduleDate,
     });
     setModalVisible(false);
@@ -217,6 +223,7 @@ const ParametricTransformer = () => {
                 <InputItem>
                   <NumericInput
                     type="up-down"
+                    value={remainingDays}
                     onChange={value => setRemainingDays(value)}
                     textColor="#fff"
                     rounded
@@ -229,6 +236,7 @@ const ParametricTransformer = () => {
                 </InputItem>
                 <InputItem>
                   <NumericInput
+                    value={remainingHours}
                     type="up-down"
                     onChange={value => setRemainingHours(value)}
                     textColor="#fff"
@@ -243,8 +251,8 @@ const ParametricTransformer = () => {
                 <InputItem>
                   <NumericInput
                     type="up-down"
+                    value={remainingMinutes}
                     onChange={value => setRemainingMinutes(value)}
-                    onLimitReached={() => setRemainingMinutes(50)}
                     textColor="#fff"
                     rounded
                     totalWidth={100}
