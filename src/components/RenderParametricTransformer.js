@@ -81,8 +81,6 @@ const ParametricTransformer = () => {
       lastSetDate: Date.now(),
     };
 
-    console.log(parametricTransformerTime);
-
     appDispatch({
       type: 'SET_PARAMETRIC_TRANSFORMER_TIME',
       payload: {

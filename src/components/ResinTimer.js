@@ -25,7 +25,7 @@ const ResinTimer = () => {
   const appDispatch = useAppDispatchContext();
   const appState = useAppStateContext();
 
-  const {currentResin, lastSetResinTime} = appState.resinInfo;
+  const {currentResin, lastSetResinTime} = appState?.resinInfo;
   const {slackTimeInMinsForTimer} = useSettingsStateContext();
 
   const [modalVisible, setModalVisible] = React.useState(false);

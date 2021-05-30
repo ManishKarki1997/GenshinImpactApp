@@ -1,4 +1,7 @@
 import React from 'react';
+import socketIOClient from 'socket.io-client';
+
+const {API_URL} = require('../constants');
 
 const AppStateContext = React.createContext();
 
@@ -103,6 +106,15 @@ const appReducer = (state, action) => {
 
 export const AppProvider = ({children}) => {
   const [state, dispatch] = React.useReducer(appReducer, initialData);
+
+  React.useEffect(() => {
+    // just for me to see how many users use the app
+    // no point in continuing improving the app if there is no-one to ues
+    // Nothing is collected, just an event is emitted to indicate that this socket is online
+
+    const socket = socketIOClient(API_URL);
+    socket.emit('I_AM_ONLINE');
+  }, []);
 
   return (
     <AppStateContext.Provider value={state}>
