@@ -200,9 +200,9 @@ const ParametricTransformer = () => {
 
           <ModalContentWrapper>
             <View style={{alignItems: 'center'}}>
-              <Heading2 style={{color: 'white'}}>Last used time</Heading2>
+              <Heading2 style={{color: 'white'}}>Remaining Time</Heading2>
               <SubtitleItalic>
-                The last time you used the Parametric Transformer
+                Until the Parametric Timer resets.
               </SubtitleItalic>
               <TimerInputWrapper>
                 <InputItem>

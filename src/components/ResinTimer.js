@@ -90,7 +90,6 @@ const ResinTimer = () => {
     let timeLeft = [];
     const remainingResinToRefill = 160 - currentResin;
     const remainingMinsUntilFullResin = remainingResinToRefill * 8;
-
     const currentDateTime = new Date();
 
     // x = milliseconds
@@ -99,6 +98,7 @@ const ResinTimer = () => {
       .format('x');
 
     const diff = parseInt(timeTillFull) - currentDateTime;
+
     if (diff > 0) {
       const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
         .toString()
@@ -208,7 +208,7 @@ const ResinTimer = () => {
           <Heading2>
             {isResinReplenished
               ? 'Resin Replenished'
-              : replenishTime.length == 0
+              : !replenishTime || replenishTime.length == 0
               ? '00:00:00'
               : `${replenishTime[0]}:${replenishTime[1]}:${replenishTime[2]}`}
           </Heading2>
