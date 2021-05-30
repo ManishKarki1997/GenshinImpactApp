@@ -21,6 +21,12 @@ const initialData = {
     lastSetResinTime: null,
   },
   lastSetParametricTransformer: null,
+  parametricTransformerTime: {
+    days: 6,
+    hours: 22,
+    mins: 0,
+    lastSetDate: null,
+  },
 };
 
 const appReducer = (state, action) => {
@@ -80,6 +86,14 @@ const appReducer = (state, action) => {
         ...state,
         lastSetParametricTransformer:
           action.payload.lastSetParametricTransformer,
+      };
+
+    case 'SET_PARAMETRIC_TRANSFORMER_TIME':
+      return {
+        ...state,
+        parametricTransformerTime: {
+          ...action.payload.parametricTransformerTime,
+        },
       };
 
     default:

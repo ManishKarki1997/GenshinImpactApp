@@ -3,6 +3,7 @@ import {Image, View, Modal} from 'react-native';
 import styled from 'styled-components/native';
 import moment from 'moment';
 import DatePicker from 'react-native-date-picker';
+import NumericInput from 'react-native-numeric-input';
 
 import {
   Body,
@@ -28,7 +29,8 @@ const ParametricTransformer = () => {
 
   const {slackTimeInMinsForTimer} = useSettingsStateContext();
 
-  const {lastSetParametricTransformer} = useAppStateContext();
+  const {lastSetParametricTransformer, parametricTransformerTime} =
+    useAppStateContext();
 
   const [modalVisible, setModalVisible] = React.useState(false);
   const [lastUsedTransformerDateTime, setLastUsedTransformerDateTime] =
@@ -37,28 +39,21 @@ const ParametricTransformer = () => {
   const [replenishTime, setReplenishTime] = React.useState(0);
   const timer = React.useRef();
 
-  // check if resin info is stored in async storage
+  const [remainingDays, setRemainingDays] = React.useState(0);
+  const [remainingHours, setRemainingHours] = React.useState(0);
+  const [remainingMinutes, setRemainingMinutes] = React.useState(0);
+
+  // check if parametric transformer info is stored in async storage
   React.useEffect(() => {
     async function checkAsyncStorageForParametricTransformer() {
       const lastSetParametricTransformerData = await getItem(
         'genshin-app-parametric-transformer-time',
-        true,
       );
 
-      if (!lastSetParametricTransformerData) {
-        appDispatch({
-          type: 'SET_PARAMETRIC_TRANSFORMER',
-          payload: {
-            lastSetParametricTransformer: new Date(),
-          },
-        });
-        return;
-      }
-
       appDispatch({
-        type: 'SET_PARAMETRIC_TRANSFORMER',
+        type: 'SET_PARAMETRIC_TRANSFORMER_TIME',
         payload: {
-          lastSetParametricTransformer: new Date(
+          parametricTransformerTime: JSON.parse(
             lastSetParametricTransformerData,
           ),
         },
@@ -69,95 +64,89 @@ const ParametricTransformer = () => {
   }, []);
 
   const handleSetTimer = () => {
-    const timeSetInFuture = moment().isBefore(lastUsedTransformerDateTime);
-
-    const timeSetBefore6Days = moment
-      .duration(moment().diff(lastUsedTransformerDateTime))
-      .asHours();
-
-    // 166 = 6 days 22 hrs, the reset time for parametric transformer
-    if (timeSetBefore6Days > 0 && timeSetBefore6Days > 166) {
-      setErrorMessage('Time cannot be 6 days and 22 hours before.');
+    if (
+      (remainingDays == 6 && remainingHours > 22) ||
+      (remainingDays == 6 && remainingHours == 22 && remainingMinutes > 0)
+    ) {
+      setErrorMessage('Max transformer reset value is 6 days 22 hours.');
       return;
     }
 
-    if (timeSetInFuture) {
-      setErrorMessage('Time cannot be set in the future');
-      return;
-    }
-
-    setErrorMessage('');
+    const parametricTransformerTime = {
+      days: remainingDays,
+      hours: remainingHours,
+      mins: remainingMinutes,
+      lastSetDate: Date.now(),
+    };
 
     appDispatch({
-      type: 'SET_PARAMETRIC_TRANSFORMER',
+      type: 'SET_PARAMETRIC_TRANSFORMER_TIME',
       payload: {
-        lastSetParametricTransformer: lastUsedTransformerDateTime,
+        parametricTransformerTime,
       },
     });
-
     setItem(
       'genshin-app-parametric-transformer-time',
-      lastUsedTransformerDateTime.toString(),
-      true,
+      parametricTransformerTime,
     );
 
-    cancelNotification(NotificationIds.TRANSFORMER_NOTIFICATION_ID);
+    // cancelNotification(NotificationIds.TRANSFORMER_NOTIFICATION_ID);
 
-    const elapsedHours = moment
-      .duration(moment().diff(lastSetParametricTransformer))
-      .asHours();
+    const resetDateTime = moment()
+      .add(remainingDays, 'days')
+      .add(remainingHours, 'hours')
+      .add(remainingMinutes, 'minutes');
 
-    const remainingHours = 166 - elapsedHours;
-    const remainingMins = Math.round(remainingHours * 60);
+    const notificationScheduleDate =
+      moment.duration(resetDateTime).asMinutes() <=
+      moment
+        .duration(moment().add(slackTimeInMinsForTimer, 'minutes'))
+        .asMinutes()
+        ? new Date(Date.now() + 1 * 1000)
+        : new Date(resetDateTime);
 
     scheduleNotification({
       id: NotificationIds.TRANSFORMER_NOTIFICATION_ID,
       title: 'Parametric Transformer',
       message: 'You can probably use your Parametric Transformer now.',
-      date:
-        remainingMins <= slackTimeInMinsForTimer
-          ? new Date(Date.now() + 3 * 1000)
-          : new Date(Date.now() + remainingHours * 60 * 60 * 1000),
+      date: notificationScheduleDate,
     });
-
     setModalVisible(false);
+
+    setErrorMessage('');
   };
 
   const calculateTimeLeft = () => {
     let timeLeft = [];
 
     const currentDateTime = new Date();
+    if (parametricTransformerTime.lastSetDate === null) {
+      return timeLeft;
+    }
 
-    const elapsedHours = moment
-      .duration(moment().diff(lastSetParametricTransformer))
-      .asHours();
-
-    const remainingMins = (166 - elapsedHours) * 60;
-
-    // x = milliseconds
-    const timeTillFull = moment(currentDateTime)
-      .add(remainingMins, 'minutes')
+    const dateTimeTillReset = moment(parametricTransformerTime.lastSetDate)
+      .add(parametricTransformerTime.days, 'days')
+      .add(parametricTransformerTime.hours, 'hours')
+      .add(parametricTransformerTime.mins, 'minutes')
       .format('x');
 
-    const diff = parseInt(timeTillFull) - currentDateTime;
+    const diff = moment(dateTimeTillReset - moment(currentDateTime));
 
-    if (diff > 0) {
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24)).toString();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24)).toString();
 
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
-        .toString()
-        .padStart(2, '0');
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
+      .toString()
+      .padStart(2, '0');
 
-      const minutes = Math.floor((diff / 1000 / 60) % 60)
-        .toString()
-        .padStart(2, '0');
+    const minutes = Math.floor((diff / 1000 / 60) % 60)
+      .toString()
+      .padStart(2, '0');
 
-      const seconds = Math.floor((diff / 1000) % 60)
-        .toString()
-        .padStart(2, '0');
+    const seconds = Math.floor((diff / 1000) % 60)
+      .toString()
+      .padStart(2, '0');
 
-      timeLeft = [days, hours, minutes, seconds];
-    }
+    timeLeft = [days, hours, minutes, seconds];
     return timeLeft;
   };
 
@@ -166,6 +155,7 @@ const ParametricTransformer = () => {
       setReplenishTime(calculateTimeLeft());
     }, 1000);
     return () => clearInterval(timer.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     lastUsedTransformerDateTime,
     lastSetParametricTransformer,
@@ -194,7 +184,7 @@ const ParametricTransformer = () => {
           <Small>Reusable in about</Small>
           <Heading3>
             {!replenishTime || replenishTime.length == 0
-              ? 'x days, y hrs, z mins, 0 s'
+              ? '0 days, 0 hrs, 0 mins, 0s'
               : `${replenishTime[0]} days, ${replenishTime[1]} hrs, ${replenishTime[2]} mins, ${replenishTime[3]}s`}
           </Heading3>
         </TransformerItem>
@@ -214,15 +204,56 @@ const ParametricTransformer = () => {
               <SubtitleItalic>
                 The last time you used the Parametric Transformer
               </SubtitleItalic>
-              <View style={{marginTop: 20}}>
-                <DatePicker
+              <TimerInputWrapper>
+                <InputItem>
+                  <NumericInput
+                    type="up-down"
+                    onChange={value => setRemainingDays(value)}
+                    textColor="#fff"
+                    rounded
+                    totalWidth={100}
+                    totalHeight={50}
+                    minValue={0}
+                    maxValue={6}
+                  />
+                  <Small>Days</Small>
+                </InputItem>
+                <InputItem>
+                  <NumericInput
+                    type="up-down"
+                    onChange={value => setRemainingHours(value)}
+                    textColor="#fff"
+                    rounded
+                    totalWidth={100}
+                    totalHeight={50}
+                    minValue={0}
+                    maxValue={23}
+                  />
+                  <Small>Hours</Small>
+                </InputItem>
+                <InputItem>
+                  <NumericInput
+                    type="up-down"
+                    onChange={value => setRemainingMinutes(value)}
+                    onLimitReached={() => setRemainingMinutes(50)}
+                    textColor="#fff"
+                    rounded
+                    totalWidth={100}
+                    totalHeight={50}
+                    minValue={0}
+                    maxValue={59}
+                  />
+                  <Small>Mins</Small>
+                </InputItem>
+
+                {/* <DatePicker
                   date={lastUsedTransformerDateTime}
                   onDateChange={setLastUsedTransformerDateTime}
                   mode="datetime"
                   textColor="white"
                   fadeToColor="rgba(22, 35, 52, 0.9)"
-                />
-              </View>
+                /> */}
+              </TimerInputWrapper>
               <Small style={{color: 'red'}}>{errorMessage}</Small>
             </View>
           </ModalContentWrapper>
@@ -273,6 +304,7 @@ const ModalContentWrapper = styled.View`
   align-items: center;
   width: 100%;
   min-height: 300px;
+  background-color: transparent;
 `;
 
 const ClickableModalBg = styled.TouchableOpacity`
@@ -286,6 +318,18 @@ const ResinInputTextBox = styled.TextInput`
   padding: 8px 12px;
   border-radius: 5px;
   margin-top: 8px;
+`;
+
+const InputItem = styled.View`
+  align-items: center;
+`;
+
+const TimerInputWrapper = styled.View`
+  margin-top: 20px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
 `;
 
 export default ParametricTransformer;
