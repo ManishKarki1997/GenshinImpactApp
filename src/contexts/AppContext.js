@@ -28,7 +28,7 @@ const initialData = {
     days: 6,
     hours: 22,
     mins: 0,
-    lastSetDate: null,
+    lastSetDate: new Date(),
   },
 };
 

@@ -78,7 +78,10 @@ const ResinTimer = () => {
     scheduleNotification({
       id: NotificationIds.RESIN_NOTIFICATION_ID,
       title: 'Resin Replenished',
-      message: 'Your resin has been fully replenished.',
+      message:
+        slackTimeInMinsForTimer == 0
+          ? 'Your resin has been fully replenished.'
+          : `Your resin will be fully replenished in about ${slackTimeInMinsForTimer} minutes.`,
       date:
         remainingResinToRefill * 8 <= slackTimeInMinsForTimer
           ? new Date(Date.now() + 3000)
@@ -251,6 +254,7 @@ const ResinTimer = () => {
 };
 
 const Container = styled.View`
+  margin-top: 16px;
   margin-bottom: 64px;
 `;
 
@@ -258,7 +262,7 @@ const HeaderWrapper = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 `;
 
 const ResinTimerWrapper = styled.View`

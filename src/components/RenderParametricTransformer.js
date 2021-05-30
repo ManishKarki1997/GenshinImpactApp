@@ -2,7 +2,7 @@ import React from 'react';
 import {Image, View, Modal} from 'react-native';
 import styled from 'styled-components/native';
 import moment from 'moment';
-import DatePicker from 'react-native-date-picker';
+
 import NumericInput from 'react-native-numeric-input';
 
 import {
@@ -260,14 +260,6 @@ const ParametricTransformer = () => {
                   />
                   <Small>Mins</Small>
                 </InputItem>
-
-                {/* <DatePicker
-                  date={lastUsedTransformerDateTime}
-                  onDateChange={setLastUsedTransformerDateTime}
-                  mode="datetime"
-                  textColor="white"
-                  fadeToColor="rgba(22, 35, 52, 0.9)"
-                /> */}
               </TimerInputWrapper>
               <Small style={{color: 'red'}}>{errorMessage}</Small>
             </View>
@@ -286,7 +278,7 @@ const HeaderWrapper = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 `;
 
 const TransformerWrapper = styled.View`
