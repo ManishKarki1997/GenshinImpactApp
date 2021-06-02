@@ -74,22 +74,24 @@ const ParametricTransformer = () => {
       return;
     }
 
-    const parametricTransformerTime = {
+    const tempParametricTransformerTime = {
       days: remainingDays,
       hours: remainingHours,
       mins: remainingMinutes,
       lastSetDate: Date.now(),
     };
 
+    setIsReusable(false);
+
     appDispatch({
       type: 'SET_PARAMETRIC_TRANSFORMER_TIME',
       payload: {
-        parametricTransformerTime,
+        parametricTransformerTime: tempParametricTransformerTime,
       },
     });
     setItem(
       'genshin-app-parametric-transformer-time',
-      parametricTransformerTime,
+      tempParametricTransformerTime,
     );
 
     cancelNotification(NotificationIds.TRANSFORMER_NOTIFICATION_ID);
