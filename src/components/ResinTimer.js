@@ -34,6 +34,7 @@ const ResinTimer = () => {
   const [replenishTime, setReplenishTime] = React.useState(0);
   const [totalTimeElapsed, setTotalTimeElapsed] = React.useState(0);
   const [isResinReplenished, setIsResinReplenished] = React.useState(false);
+  const [absoluteReplenishTime, setAbsoluteReplenishTime] = React.useState('');
 
   const timer = React.useRef();
 
@@ -57,10 +58,22 @@ const ResinTimer = () => {
   const handleAfterEnteringResin = async () => {
     setErrorMessage('');
     setModalVisible(false);
+    setIsResinReplenished(false);
+
     const resinInfo = {
       currentResin: parseInt(tempResin),
       lastSetResinTime: Date.now(),
     };
+
+    if (tempResin >= 160) {
+      setAbsoluteReplenishTime('');
+    } else {
+      const tempAbsoluteRefilTime = moment(
+        moment().add((160 - tempResin) * 8, 'minutes'),
+      ).format('HH:mm A');
+
+      setAbsoluteReplenishTime(tempAbsoluteRefilTime);
+    }
 
     appDispatch({
       type: 'SET_RESIN_INFO',
@@ -147,7 +160,7 @@ const ResinTimer = () => {
   // check if resin info is stored in async storage
   React.useEffect(() => {
     async function checkAsyncStorageForResinInfo() {
-      const resinInfo = await getItem('genshin-app-resin-info');
+      const resinInfo = JSON.parse(await getItem('genshin-app-resin-info'));
       if (!resinInfo) {
         appDispatch({
           type: 'SET_RESIN_INFO',
@@ -158,13 +171,37 @@ const ResinTimer = () => {
             },
           },
         });
+
+        const tempAbsoluteRefilTime = moment(
+          moment().add(21, 'hours').add(20, 'minutes'),
+        ).format('HH:mm A');
+
+        setAbsoluteReplenishTime(tempAbsoluteRefilTime);
+
         return;
+      }
+
+      const replenishedResin = Math.floor(
+        moment.duration(moment().diff(resinInfo.lastSetResinTime)).minutes() /
+          8,
+      );
+
+      resinInfo.currentResin = resinInfo.currentResin + replenishedResin;
+
+      if (resinInfo.currentResin == 160) {
+        setAbsoluteReplenishTime('');
+      } else {
+        const tempAbsoluteRefilTime = moment(
+          moment().add((160 - resinInfo.currentResin) * 8, 'minutes'),
+        ).format('HH:mm A');
+
+        setAbsoluteReplenishTime(tempAbsoluteRefilTime);
       }
 
       appDispatch({
         type: 'SET_RESIN_INFO',
         payload: {
-          resinInfo: JSON.parse(resinInfo),
+          resinInfo: resinInfo,
         },
       });
     }
@@ -215,6 +252,9 @@ const ResinTimer = () => {
               ? '00:00:00'
               : `${replenishTime[0]}:${replenishTime[1]}:${replenishTime[2]}`}
           </Heading2>
+          {absoluteReplenishTime !== '' && (
+            <Small> at {absoluteReplenishTime}</Small>
+          )}
         </ResinTimerItem>
       </ResinTimerWrapper>
 

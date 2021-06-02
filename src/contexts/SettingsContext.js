@@ -17,7 +17,7 @@ const initialSettings = {
   showResinTimer: true,
   showParametricTransformer: true,
   slackTimeInMinsForTimer: 10,
-  updateVersion: 1.2,
+  updateVersion: 1.3,
   newUpdateInfo: null,
 };
 

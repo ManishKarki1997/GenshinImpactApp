@@ -1,5 +1,12 @@
 import React from 'react';
 import socketIOClient from 'socket.io-client';
+import {
+  getUniqueId,
+  getManufacturer,
+  getSystemName,
+  getBrand,
+  getAndroidId,
+} from 'react-native-device-info';
 
 const {API_URL} = require('../constants');
 
@@ -107,14 +114,23 @@ const appReducer = (state, action) => {
 export const AppProvider = ({children}) => {
   const [state, dispatch] = React.useReducer(appReducer, initialData);
 
-  React.useEffect(() => {
-    // just for me to see how many users use the app
-    // no point in continuing improving the app if there is no-one to ues
-    // Nothing is collected, just an event is emitted to indicate that this socket is online
+  // React.useEffect(() => {
+  //   const uniqueId = getUniqueId();
+  //   const systemName = getSystemName();
+  //   const brandName = getBrand();
 
-    const socket = socketIOClient(API_URL);
-    socket.emit('I_AM_ONLINE');
-  }, []);
+  //   // just for me to see how many users use the app
+  //   // no point in continuing improving the app if there is no-one to ues
+  //   // sending unique id and brand name
+
+  //   const socket = socketIOClient(API_URL);
+  //   // const socket = socketIOClient('http://092aeee7efae.ngrok.io');
+  //   socket.emit('I_AM_ONLINE', {
+  //     uniqueId,
+  //     systemName,
+  //     brandName,
+  //   });
+  // }, []);
 
   return (
     <AppStateContext.Provider value={state}>
