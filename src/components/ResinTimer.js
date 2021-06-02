@@ -214,7 +214,7 @@ const ResinTimer = () => {
       <HeaderWrapper>
         <Header style={{flexDirection: 'row', alignItems: 'center'}}>
           <Body style={{color: 'white'}}>Resin Timer</Body>
-          <VerySmall style={{marginLeft: 8}}>(Beta)</VerySmall>
+          <VerySmall style={{marginLeft: 8, color: 'white'}}>(Beta)</VerySmall>
         </Header>
 
         <ResinOverview onPress={() => setModalVisible(true)}>

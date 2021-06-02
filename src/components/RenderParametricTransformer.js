@@ -178,7 +178,7 @@ const ParametricTransformer = () => {
       <HeaderWrapper>
         <Header style={{flexDirection: 'row', alignItems: 'center'}}>
           <Body style={{color: 'white'}}>Parametric Transformer</Body>
-          <VerySmall style={{marginLeft: 8}}>(Beta)</VerySmall>
+          <VerySmall style={{marginLeft: 8, color: 'white'}}>(Beta)</VerySmall>
         </Header>
         <TransformerOverview onPress={() => setModalVisible(true)}>
           <Image

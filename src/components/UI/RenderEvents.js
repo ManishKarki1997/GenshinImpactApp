@@ -107,7 +107,7 @@ const RenderEvents = () => {
                     </Heading2>
                     <Subtitle
                       style={{
-                        color: '#e3e4e8',
+                        color: '#fff',
                         marginTop: 12,
                       }}>
                       {selectedEvent.subtitle}

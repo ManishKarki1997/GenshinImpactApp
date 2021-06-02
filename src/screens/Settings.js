@@ -142,10 +142,7 @@ const Settings = () => {
     setSelectedShowTransformerTimerInDashboard(
       settingsValue.showParametricTransformer,
     );
-    console.log(
-      settingsValue.slackTimeInMinsForTimer,
-      typeof settingsValue.slackTimeInMinsForTimer,
-    );
+
     setTimerSlack(settingsValue.slackTimeInMinsForTimer);
   }, [settingsValue]);
 
@@ -357,7 +354,7 @@ const Settings = () => {
                 alignItems: 'center',
                 marginTop: 8,
               }}>
-              <Small>* Hutao icon by</Small>
+              <VerySmall>* Hutao icon by</VerySmall>
               <TouchableOpacity
                 style={{marginLeft: 4}}
                 onPress={() =>
@@ -371,7 +368,7 @@ const Settings = () => {
           </CreditItem>
         </CreditsWrapper>
 
-        <View style={{marginTop: 40}}>
+        <View style={{marginTop: 40, marginBottom: 40}}>
           <Small>
             Want to create your own app or website like this? Use my free public
             API.
@@ -386,7 +383,7 @@ const Settings = () => {
   );
 };
 
-const Container = styled.View`
+const Container = styled.ScrollView`
   padding: 16px 24px;
   flex: 1;
   background-color: ${props => props.theme.PRIMARY_BACKGROUND};

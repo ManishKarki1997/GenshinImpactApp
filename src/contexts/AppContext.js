@@ -114,23 +114,23 @@ const appReducer = (state, action) => {
 export const AppProvider = ({children}) => {
   const [state, dispatch] = React.useReducer(appReducer, initialData);
 
-  // React.useEffect(() => {
-  //   const uniqueId = getUniqueId();
-  //   const systemName = getSystemName();
-  //   const brandName = getBrand();
+  React.useEffect(() => {
+    const uniqueId = getUniqueId();
+    const systemName = getSystemName();
+    const brandName = getBrand();
 
-  //   // just for me to see how many users use the app
-  //   // no point in continuing improving the app if there is no-one to ues
-  //   // sending unique id and brand name
+    // just for me to see how many users use the app
+    // no point in continuing improving the app if there is no-one to ues
+    // sending unique id and brand name
 
-  //   const socket = socketIOClient(API_URL);
-  //   // const socket = socketIOClient('http://092aeee7efae.ngrok.io');
-  //   socket.emit('I_AM_ONLINE', {
-  //     uniqueId,
-  //     systemName,
-  //     brandName,
-  //   });
-  // }, []);
+    const socket = socketIOClient(API_URL);
+    // const socket = socketIOClient('http://092aeee7efae.ngrok.io');
+    socket.emit('I_AM_ONLINE', {
+      uniqueId,
+      systemName,
+      brandName,
+    });
+  }, []);
 
   return (
     <AppStateContext.Provider value={state}>
